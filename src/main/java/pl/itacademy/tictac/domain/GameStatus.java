@@ -1,4 +1,4 @@
-package data;
+package pl.itacademy.tictac.domain;
 
 public enum GameStatus {
     NEW_GAME,
