@@ -17,7 +17,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    public void registerPlayer_savePlayerToReporistory(){
+    public void registerPlayer_savesPlayerToRepository(){
 
         Player player = playerService.registerPlayer("Jan", "Kowalski");
     }

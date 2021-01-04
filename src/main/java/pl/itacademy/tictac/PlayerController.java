@@ -1,7 +1,5 @@
 package pl.itacademy.tictac;
 
-
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,8 +16,7 @@ public class PlayerController {
     private final PlayerService playerService;
 
     @PostMapping("/register")
-    public ResponseEntity<Player> registerNewPlayer(@RequestParam("name") String name, @RequestParam("password") String password){
+    public ResponseEntity<Player> registerNewPlayer(@RequestParam("name") String name, @RequestParam("password") String password) {
         return null;
-
     }
 }
