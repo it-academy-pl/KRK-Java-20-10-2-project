@@ -11,18 +11,37 @@ class PlayerServiceTest {
     private PlayerService playerService;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         playerRepository = new InMemoryPlayerRepository();
         playerService = new PlayerService(playerRepository);
     }
 
     @Test
-    public void registerPlayer_savesPlayerToRepository(){
-
+    public void registerPlayer_savesPlayerToRepository() {
         Player player = playerService.registerPlayer("Jan", "Kowalski");
         Player expectedPlayer = new Player("Jan", "Kowalski");
         assertThat(player).isEqualTo(expectedPlayer);
         assertThat(playerRepository.getByName("Jan")).isEqualTo(expectedPlayer);
+    }
+
+    @Test
+    public void registerPlayer_playerNameAlreadyExists_throwPlayerAlreadyExistsException() {
+
+    }
+
+    @Test
+    public void getPlayerByNameAndPassword_playerDoesNotExists_throwsPlayerNotFoundException() {
+
+    }
+
+    @Test
+    public void getPlayerByNameAndPassword_wrongPassword_throwsWrongPasswordsException() {
+
+    }
+
+    @Test
+    public void getPlayerByNameAndPassword_correctPassword_returnsPlayer() {
+
     }
 
 }
