@@ -11,6 +11,8 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
 
     public Player registerPlayer(String name, String password) {
-        return null;
+        Player player = new Player(name,password);
+        playerRepository.save(player);
+        return player;
     }
 }

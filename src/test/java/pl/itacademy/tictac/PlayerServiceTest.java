@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Player;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class PlayerServiceTest {
     private PlayerRepository playerRepository;
@@ -20,6 +20,9 @@ class PlayerServiceTest {
     public void registerPlayer_savesPlayerToRepository(){
 
         Player player = playerService.registerPlayer("Jan", "Kowalski");
+        Player expectedPlayer = new Player("Jan", "Kowalski");
+        assertThat(player).isEqualTo(expectedPlayer);
+        assertThat(playerRepository.getByName("Jan")).isEqualTo(expectedPlayer);
     }
 
 }
