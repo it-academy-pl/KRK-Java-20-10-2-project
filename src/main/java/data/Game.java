@@ -1,5 +1,6 @@
 package data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,10 +55,22 @@ public class Game {
         Symbol playerSymbol = lobby.get(player);
         if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getX()][coordinates.getY()] == 0) {
             grid[coordinates.getX()][coordinates.getY()] = getPlayersSymbol(playerSymbol);
-            //check if game has ended
+            if(winCheck()) {
+                finish = true;
+                endSettledGame(player);
+            }
         }
 
         return false;
+    }
+
+    private void endSettledGame(Player winner) {
+        winner.saveGameResult(1);
+        for(Map.Entry<Player, Symbol> playerEntry : lobby.entrySet()) {
+            if(!playerEntry.getKey().equals(winner)) {
+                playerEntry.getKey().saveGameResult(-1);
+            }
+        }
     }
 
     private char getPlayersSymbol(Symbol symbol) {
@@ -68,7 +81,44 @@ public class Game {
     }
 
     private boolean winCheck() {
-        //check if game is won
+        ArrayList<Integer> fields = new ArrayList<>();
+        //*****************************
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                fields.add(grid[j][i]);
+            }
+            if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+                return true;
+            }
+            fields.clear();
+        }
+        //*****************************
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                fields.add(grid[i][j]);
+            }
+            if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+                return true;
+            }
+            fields.clear();
+        }
+        //*****************************
+        for(int i = 0; i < 3; i++) {
+            fields.add(grid[i][i]);
+        }
+        if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+            return true;
+        }
+        fields.clear();
+        //*****************************
+        for(int i = 0; i < 3; i++) {
+            fields.add(grid[i][2-i]);
+        }
+        if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+            return true;
+        }
+        fields.clear();
+        //*****************************
         return false;
     }
 }

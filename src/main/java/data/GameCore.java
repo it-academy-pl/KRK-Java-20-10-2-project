@@ -67,7 +67,7 @@ public class GameCore {
     }
 
     public void play() {
-        //here: -make move -check if end
+        //here: -make move -check if end (>if all places full >if any won(checked inside))
         //all the magic
     }
 }
