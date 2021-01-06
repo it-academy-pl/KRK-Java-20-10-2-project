@@ -6,7 +6,7 @@ public class Player implements Comparable<Player> {
     private final String name;
     private final Password password;
     private final Score playerScore;
-    private String activeLobby;
+    private Lobby activeLobby;
 
 
     public Player(String name, String password) {
@@ -21,6 +21,7 @@ public class Player implements Comparable<Player> {
     }
 
     public boolean logIn(String password) {
+        // need to be expanded -> player cannot play if not loggedIn <- this needs to by signalized by new boolean field
         return this.password.letMeIn(password);
     }
 
@@ -44,11 +45,11 @@ public class Player implements Comparable<Player> {
         return new Score(playerScore.getGamesPlayed(), playerScore.getWins(), playerScore.getDraws(), playerScore.getLoses());
     }
 
-    public String getActiveLobby() {
+    public Lobby getActiveLobby() {
         return activeLobby;
     }
 
-    public void setActiveLobby(String activeLobby) {
+    public void setActiveLobby(Lobby activeLobby) {
         this.activeLobby = activeLobby;
     }
 

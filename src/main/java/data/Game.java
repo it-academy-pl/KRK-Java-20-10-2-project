@@ -19,9 +19,21 @@ public class Game {
     public Game() {
         this.lobby = new HashMap<>();
         this.grid = new int[3][3];
-        this.currentSymbolPlayed = null;
+        this.currentSymbolPlayed = Symbol.O;
         gameStarted = false;
         finish = false;
+    }
+
+    public Symbol getCurrentSymbolPlayed() {
+        return currentSymbolPlayed;
+    }
+
+    public int[][] getGrid() {
+        return grid;
+    }
+
+    public boolean isFinish() {
+        return finish;
     }
 
     public void join(Player player, Symbol symbol) {
@@ -52,15 +64,36 @@ public class Game {
     }
 
     public boolean makeMove(Player player,Coordinates coordinates) {
+        if(!gameStarted) {
+            throw new UnsupportedOperationException("Game not started!");
+        }
+
+        boolean freeSpaceFlag = false;
+        for(int[] ints : grid) {
+            for(int anInt : ints) {
+                if (anInt == 0) {
+                    freeSpaceFlag = true;
+                    break;
+                }
+            }
+        }
+        if(!freeSpaceFlag) {
+            finish = true;
+            gameStarted = false;
+            endDrawGame();
+            return true;
+        }
+
         Symbol playerSymbol = lobby.get(player);
         if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getX()][coordinates.getY()] == 0) {
             grid[coordinates.getX()][coordinates.getY()] = getPlayersSymbol(playerSymbol);
             if(winCheck()) {
                 finish = true;
+                gameStarted = false;
                 endSettledGame(player);
             }
+            return true;
         }
-
         return false;
     }
 
@@ -70,6 +103,12 @@ public class Game {
             if(!playerEntry.getKey().equals(winner)) {
                 playerEntry.getKey().saveGameResult(-1);
             }
+        }
+    }
+
+    private void endDrawGame() {
+        for(Map.Entry<Player, Symbol> playerEntry : lobby.entrySet()) {
+            playerEntry.getKey().saveGameResult(0);
         }
     }
 
