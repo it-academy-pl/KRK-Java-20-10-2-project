@@ -22,7 +22,7 @@ public class PlayerDatabase {
 
     public void registerNewPlayer(String name, String password) {
         for(Player player : registeredPlayers) {
-            if(player.getName().compareTo(name) == 0) {
+            if(player.getName().equals(name)) {
                 throw new UnsupportedOperationException("Player already registered");
             }
         }

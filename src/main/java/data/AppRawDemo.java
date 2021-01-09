@@ -3,8 +3,14 @@ package data;
 import java.util.Scanner;
 
 public class AppRawDemo {
+
+    /**
+     * 0.11 alpha functionality test
+     * @author Karol Kurbiel
+     * created on 2021/01/09
+     */
+
     public static void main(String[] args) {
-        //0.1 alpha functionality test
 
         //*** 1. create new account
         GameCore.getInstance().registerNewPlayer("Ryszard","Ryszard123");
@@ -58,12 +64,15 @@ public class AppRawDemo {
                     scanner.nextLine();
 
                     GameCore.getInstance().makeMoveInActiveGame((isXmoving ? "Ryszard" : "Marzena"), new Coordinates(coordinatesX, coordinatesY));
+                    break;
             }
         }
 
-        // - needed any info about winner
-        // - clearer presentation who is actually playing now
+        // NEED TO FIX:
+        // - if tried to make move on occupied place again, same symbol have chance
+        // - after each coordinates placed need to display grid
+        // - break from while loop if any player wins
 
-        // - error in registering new players -> Needed to update
+        // - check if make move works correctly
     }
 }

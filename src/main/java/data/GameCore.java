@@ -36,9 +36,9 @@ public class GameCore {
                 } else {
                     throw new IllegalAccessException("Wrong password");
                 }
-            } else {
-                throw new UnsupportedOperationException("Player doesn't exist.");
-            }
+            } //else {
+//                throw new UnsupportedOperationException("Player doesn't exist.");
+//            }
         }
     }
 
@@ -87,8 +87,7 @@ public class GameCore {
                 throw new UnsupportedOperationException("Lobby is full.");
             }
         }
-        throw new UnsupportedOperationException("Lobby with this doesn't exist.");
-
+//        throw new UnsupportedOperationException("Lobby with this doesn't exist.");
     }
 
     public void leaveLobby(Player player) {
@@ -118,7 +117,6 @@ public class GameCore {
                 if(lobby.equals(firstPlayer.getActiveLobby())) {
 
                     lobby.getGame().startGame();
-//                    Player[] players = {firstPlayer, secondPlayer};
                     break;
                 }
             }
