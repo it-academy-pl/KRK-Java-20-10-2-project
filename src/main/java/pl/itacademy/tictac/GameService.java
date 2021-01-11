@@ -17,4 +17,8 @@ public class GameService {
         game.setPlayerX(player);
         return game;
     }
+
+    public void joinGame(long id, String playerName, String playerPassword) {
+        throw new GameNotFoundException("Game " + id + " not found");
+    }
 }

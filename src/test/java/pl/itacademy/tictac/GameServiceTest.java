@@ -6,6 +6,7 @@ import pl.itacademy.tictac.domain.Game;
 import pl.itacademy.tictac.domain.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
 
 class GameServiceTest {
@@ -36,7 +37,9 @@ class GameServiceTest {
 
     @Test
     public void joinGame_gameIdDoesNotExists_throwsGameNotFoundException() {
-
+        GameNotFoundException exception = assertThrows(GameNotFoundException.class,
+                () -> gameService.joinGame(42, "Jan", "Kowalski123"));
+        assertThat(exception.getMessage()).contains("42");
     }
 
     @Test
