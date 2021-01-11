@@ -37,7 +37,7 @@ public class Player implements Comparable<Player> {
                 playerScore.addWin();
                 break;
             default:
-                throw new IllegalArgumentException("-1, 0 or 1 was expected.");
+                throw new IllegalArgumentException("-1, 0 or 1 was expected while saving players score.");
         }
     }
 

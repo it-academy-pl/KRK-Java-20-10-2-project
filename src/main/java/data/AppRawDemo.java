@@ -5,9 +5,9 @@ import java.util.Scanner;
 public class AppRawDemo {
 
     /**
-     * 0.11 alpha functionality test
+     * 0.12 alpha functionality test
      * @author Karol Kurbiel
-     * created on 2021/01/09
+     * updated on 2021/01/11
      */
 
     public static void main(String[] args) {
@@ -46,6 +46,7 @@ public class AppRawDemo {
         while(!quit) {
             System.out.println("press:");
             System.out.println("0 - to quit; 1 - to enter coordinates");
+
             chose = scanner.nextInt();
             scanner.nextLine();
             switch(chose) {
@@ -54,7 +55,6 @@ public class AppRawDemo {
                     break;
                 case 1:
                     System.out.println("Now is " + (isXmoving ? "X " : "O ") + "turn.");
-                    isXmoving ^= true;
                     System.out.println("Enter coordinates (range 0-2): ");
                     System.out.print("\tx: ");
                     coordinatesX = scanner.nextInt();
@@ -63,16 +63,21 @@ public class AppRawDemo {
                     coordinatesY = scanner.nextInt();
                     scanner.nextLine();
 
-                    GameCore.getInstance().makeMoveInActiveGame((isXmoving ? "Ryszard" : "Marzena"), new Coordinates(coordinatesX, coordinatesY));
+                    System.out.println(GameCore.getInstance().makeMoveInActiveGame((isXmoving ? "Ryszard" : "Marzena"), new Coordinates(coordinatesX, coordinatesY)));
+                    isXmoving ^= true;
                     break;
+            }
+
+            GameCore.getInstance().displayGrid("Marzena");
+            if(GameCore.getInstance().gameEnd("Marzena")) {
+                quit = true;
             }
         }
 
         // NEED TO FIX:
+        // done- after each coordinates placed need to display grid
+        // done- check if make move works correctly
+        // done- break from while loop if any player wins
         // - if tried to make move on occupied place again, same symbol have chance
-        // - after each coordinates placed need to display grid
-        // - break from while loop if any player wins
-
-        // - check if make move works correctly
     }
 }

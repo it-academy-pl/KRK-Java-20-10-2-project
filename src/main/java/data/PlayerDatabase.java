@@ -30,6 +30,6 @@ public class PlayerDatabase {
     }
 
     public void removePlayer(String name) {
-        registeredPlayers.removeIf(player -> player.getName().compareTo(name) == 0);
+        registeredPlayers.removeIf(player -> player.getName().equals(name));
     }
 }

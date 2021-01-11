@@ -36,11 +36,11 @@ public class Game {
         return finish;
     }
 
-    public void join(Player player, Symbol symbol) {
-        if(lobby.size() < 3) {
-            lobby.put(player, symbol);
+    public void join(Player player) {
+        if(lobby.size() < 2) {
+            lobby.put(player, (lobby.size() == 0 ? Symbol.X : Symbol.O));
         } else {
-            throw new IndexOutOfBoundsException("Lobby is already full");
+            throw new IndexOutOfBoundsException("Lobby is full.");
         }
     }
 
@@ -87,6 +87,7 @@ public class Game {
         Symbol playerSymbol = lobby.get(player);
         if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getX()][coordinates.getY()] == 0) {
             grid[coordinates.getX()][coordinates.getY()] = getPlayersSymbol(playerSymbol);
+            currentSymbolPlayed = playerSymbol;
             if(winCheck()) {
                 finish = true;
                 gameStarted = false;
@@ -127,6 +128,11 @@ public class Game {
                 fields.add(grid[j][i]);
             }
             if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+                if(fields.get(0) == 120) {
+                    System.out.println("x won");
+                } else {
+                    System.out.println("o won");
+                }
                 return true;
             }
             fields.clear();
@@ -137,6 +143,11 @@ public class Game {
                 fields.add(grid[i][j]);
             }
             if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+                if(fields.get(0) == 120) {
+                    System.out.println("x won");
+                } else {
+                    System.out.println("o won");
+                }
                 return true;
             }
             fields.clear();
@@ -146,6 +157,11 @@ public class Game {
             fields.add(grid[i][i]);
         }
         if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+            if(fields.get(0) == 120) {
+                System.out.println("x won");
+            } else {
+                System.out.println("o won");
+            }
             return true;
         }
         fields.clear();
@@ -154,6 +170,11 @@ public class Game {
             fields.add(grid[i][2-i]);
         }
         if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
+            if(fields.get(0) == 120) {
+                System.out.println("x won");
+            } else {
+                System.out.println("o won");
+            }
             return true;
         }
         fields.clear();
