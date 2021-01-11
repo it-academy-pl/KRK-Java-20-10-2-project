@@ -47,6 +47,8 @@ class GameServiceTest {
     public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
+        gameRepository.save(game);
+        assertThrows(GameNotAvailableForRegistrationException.class, () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
 
     }
 
