@@ -1,4 +1,4 @@
-package pl.itacademy.tictac;
+package pl.itacademy.tictac.exception;
 
 public class PlayerNotFoundException extends RuntimeException {
     public PlayerNotFoundException (String message){

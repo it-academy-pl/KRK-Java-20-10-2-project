@@ -2,11 +2,11 @@ package pl.itacademy.tictac;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions.*;
 import pl.itacademy.tictac.domain.Player;
+import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlayerServiceTest {
     private PlayerRepository playerRepository;
@@ -28,9 +28,12 @@ class PlayerServiceTest {
 
     @Test
     public void registerPlayer_playerNameAlreadyExists_throwPlayerAlreadyExistsException() {
+        Player player = new Player("Jan", "Kowalski");
+        playerRepository.save(player);
 
-        PlayerAlreadyExistsException exception = (PlayerAlreadyExistsException.class),
-        () ->
+        PlayerAlreadyExistsException exception = assertThrows(PlayerAlreadyExistsException.class,
+                () -> playerService.registerPlayer("Jan", "ABCD123"));
+        assertThat(exception.getMessage()).contains("Player already exists");
     }
 
     @Test
