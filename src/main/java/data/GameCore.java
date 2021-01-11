@@ -66,7 +66,6 @@ public class GameCore {
     }
 
     public void joinCreatedLobby(String lobbyName, String playerName) {
-        //search for games, join
 
         Player player = searchForPlayer(playerName);
 
@@ -77,18 +76,15 @@ public class GameCore {
         for(Lobby lobby : gameLobbyList) {
             if(lobby.getName().equals(lobbyName) && lobby.getNumberOfPlayers() < 2) {
                 lobby.join();
-//                lobby.getGame().join(player, (lobby.getNumberOfPlayers() == 0 ? Game.Symbol.X : Game.Symbol.O));
                 lobby.getGame().join(player);
                 player.setActiveLobby(lobby);
             } else if(lobby.getName().equals(lobbyName)) {
                 throw new UnsupportedOperationException("Lobby is full.");
             }
         }
-//        throw new UnsupportedOperationException("Lobby with this doesn't exist.");
     }
 
     public void leaveLobby(Player player) {
-        //look for what lobby you are in, and if leave
         if(player.getActiveLobby() == null) {
             throw new UnsupportedOperationException("Player didn't join any lobby.");
         }
@@ -103,8 +99,6 @@ public class GameCore {
     }
 
     public void startGame(String firstPlayerName, String secondPlayerName) {
-        //here: -make move -check if end (>if all places full ( checked inside ) >if any won(checked inside))
-
         Player firstPlayer = searchForPlayer(firstPlayerName);
         Player secondPlayer = searchForPlayer(secondPlayerName);
 

@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class AppRawDemo {
 
     /**
-     * 0.12 alpha functionality test
+     * 0.2 alpha functionality test
      * @author Karol Kurbiel
      * updated on 2021/01/11
      */
@@ -55,15 +55,18 @@ public class AppRawDemo {
                     break;
                 case 1:
                     System.out.println("Now is " + (isXmoving ? "X " : "O ") + "turn.");
-                    System.out.println("Enter coordinates (range 0-2): ");
-                    System.out.print("\tx: ");
-                    coordinatesX = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("\ty: ");
-                    coordinatesY = scanner.nextInt();
-                    scanner.nextLine();
 
-                    System.out.println(GameCore.getInstance().makeMoveInActiveGame((isXmoving ? "Ryszard" : "Marzena"), new Coordinates(coordinatesX, coordinatesY)));
+                    boolean moveCompleted = false;
+                    while(!moveCompleted) {
+                        System.out.println("Enter coordinates (range 0-2): ");
+                        System.out.print("\tx: ");
+                        coordinatesY = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.print("\ty: ");
+                        coordinatesX = scanner.nextInt();
+                        scanner.nextLine();
+                        moveCompleted = GameCore.getInstance().makeMoveInActiveGame((isXmoving ? "Ryszard" : "Marzena"), new Coordinates(coordinatesX, coordinatesY));
+                    }
                     isXmoving ^= true;
                     break;
             }
@@ -73,11 +76,5 @@ public class AppRawDemo {
                 quit = true;
             }
         }
-
-        // NEED TO FIX:
-        // done- after each coordinates placed need to display grid
-        // done- check if make move works correctly
-        // done- break from while loop if any player wins
-        // - if tried to make move on occupied place again, same symbol have chance
     }
 }

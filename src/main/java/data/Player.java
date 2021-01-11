@@ -21,7 +21,7 @@ public class Player implements Comparable<Player> {
     }
 
     public boolean logIn(String password) {
-        // need to be expanded -> player cannot play if not loggedIn <- this needs to by signalized by new boolean field
+        // possibility to improvement -> player cannot play if not loggedIn <- this needs to by signalized by new boolean field
         return this.password.letMeIn(password);
     }
 
