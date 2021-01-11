@@ -9,9 +9,13 @@ import pl.itacademy.tictac.domain.Player;
 public class PlayerService {
     private final PlayerRepository playerRepository;
 
-    public Player registerPlayer(String name, String password) {
+    public Player registerPlayer(String name, String password) throws PlayerAlreadyExistsException {
         Player player = new Player(name, password);
-        playerRepository.save(player);
-        return player;
+        if (player.equals(playerRepository.getByName(name))) {
+            throw new PlayerAlreadyExistsException("Player already exists! Try to log in!");
+        } else {
+            playerRepository.save(player);
+            return player;
+        }
     }
 }
