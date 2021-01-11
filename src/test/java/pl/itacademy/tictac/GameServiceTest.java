@@ -43,18 +43,23 @@ class GameServiceTest {
         assertThat(exception.getMessage()).contains("42");
     }
 
+    //TODO: fix the implementation for make this test green
     @Test
     public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
         gameRepository.save(game);
         assertThrows(GameNotAvailableForRegistrationException.class, () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
-
     }
 
     @Test
     public void joinGame_newGameStatus_joinsGameAsO_changesGameStatusToMoveX() {
+//TODO: add the test
+    }
 
+    @Test
+    public void makeMove_wrongGameId_throwsGameNotFoundException() {
+        //TODO: add the test
     }
 
 }
