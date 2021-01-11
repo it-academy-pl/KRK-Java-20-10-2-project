@@ -48,7 +48,6 @@ class GameServiceTest {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
 
-
     }
 
     @Test
