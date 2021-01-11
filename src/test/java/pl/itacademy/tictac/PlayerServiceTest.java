@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
+import pl.itacademy.tictac.exception.PlayerNotFoundException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +40,8 @@ class PlayerServiceTest {
     @Test
     public void getPlayerByNameAndPassword_playerDoesNotExists_throwsPlayerNotFoundException() {
 
+        PlayerNotFoundException exception = assertThrows(PlayerNotFoundException.class, () -> playerService.getPlayerByNameAndPassword("Jan", "Kowlaski"));
+        assertThat(exception.getMessage()).contains("Player not found");
     }
 
     @Test

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
+import pl.itacademy.tictac.exception.PlayerNotFoundException;
 
 import static java.util.Objects.nonNull;
 
@@ -21,5 +22,9 @@ public class PlayerService {
         player = new Player(name, password);
         playerRepository.save(player);
         return player;
+    }
+
+    public Player getPlayerByNameAndPassword(String name, String password) {
+        throw new PlayerNotFoundException("Player not found");
     }
 }
