@@ -7,6 +7,7 @@ import pl.itacademy.tictac.domain.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static pl.itacademy.tictac.domain.GameStatus.MOVE_X;
 import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
 
 class GameServiceTest {
@@ -44,6 +45,9 @@ class GameServiceTest {
 
     @Test
     public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
+        Game game = new Game();
+        game.setGameStatus(MOVE_X);
+
 
     }
 
