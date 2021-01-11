@@ -19,6 +19,6 @@ public class GameService {
     }
 
     public void joinGame(long id, String playerName, String playerPassword) {
-        throw new GameNotFoundException("Game " + id + " not found");
+        throw new GameNotFoundException(String.format("Game %d not found", id));
     }
 }
