@@ -39,19 +39,23 @@ class PlayerServiceTest {
 
     @Test
     public void getPlayerByNameAndPassword_playerDoesNotExists_throwsPlayerNotFoundException() {
-
-        PlayerNotFoundException exception = assertThrows(PlayerNotFoundException.class, () -> playerService.getPlayerByNameAndPassword("Jan", "Kowlaski"));
-        assertThat(exception.getMessage()).contains("Player not found");
+        PlayerNotFoundException exception = assertThrows(PlayerNotFoundException.class,
+                () -> playerService.getPlayerByNameAndPassword("Jan", "Kowlaski"));
+        assertThat(exception).hasMessage("Player not found");
     }
 
     @Test
     public void getPlayerByNameAndPassword_wrongPassword_throwsWrongPasswordsException() {
-
+//TODO: implement this method!
     }
 
     @Test
     public void getPlayerByNameAndPassword_correctPassword_returnsPlayer() {
+        Player jan = new Player("Jan", "k0w@lsk1");
+        playerRepository.save(jan);
 
+        Player player = playerService.getPlayerByNameAndPassword("Jan", "k0w@lsk1");
+        assertThat(player).isEqualTo(jan);
     }
 
 }

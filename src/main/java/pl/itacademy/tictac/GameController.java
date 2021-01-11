@@ -16,7 +16,8 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/create")
-    public ResponseEntity<Game> createNewGame(@RequestParam("playerName") String playerName) {
-        return ResponseEntity.ok(gameService.createGame(playerName));
+    public ResponseEntity<Game> createNewGame(@RequestParam("playerName") String playerName,
+                                              @RequestParam("playerPassword") String playerPassword) {
+        return ResponseEntity.ok(gameService.createGame(playerName, playerPassword));
     }
 }

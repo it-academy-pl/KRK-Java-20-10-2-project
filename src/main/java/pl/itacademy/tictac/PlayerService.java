@@ -6,6 +6,8 @@ import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
 import pl.itacademy.tictac.exception.PlayerNotFoundException;
 
+import java.util.Optional;
+
 import static java.util.Objects.nonNull;
 
 @Service
@@ -25,6 +27,7 @@ public class PlayerService {
     }
 
     public Player getPlayerByNameAndPassword(String name, String password) {
-        throw new PlayerNotFoundException("Player not found");
+        return Optional.ofNullable(playerRepository.getByName(name))
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
     }
 }

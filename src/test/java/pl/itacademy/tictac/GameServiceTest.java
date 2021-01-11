@@ -13,12 +13,14 @@ class GameServiceTest {
     private GameService gameService;
     private GameRepository gameRepository;
     private PlayerRepository playerRepository;
+    private PlayerService playerService;
 
     @BeforeEach
     public void setUp() {
         gameRepository = new InMemoryGameRepository();
         playerRepository = new InMemoryPlayerRepository();
-        gameService = new GameService(gameRepository, playerRepository);
+        playerService = new PlayerService(playerRepository);
+        gameService = new GameService(gameRepository, playerService);
     }
 
     @Test
@@ -26,10 +28,25 @@ class GameServiceTest {
         Player player = new Player("Jan", "kowalski");
         playerRepository.save(player);
 
-        Game game = gameService.createGame("Jan");
+        Game game = gameService.createGame("Jan", "kowalski");
 
         assertThat(game.getGameStatus()).isEqualTo(NEW_GAME);
         assertThat(game.getPlayerX()).isEqualTo(player);
+    }
+
+    @Test
+    public void joinGame_gameIdDoesNotExists_throwsGameNotFoundException() {
+
+    }
+
+    @Test
+    public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
+
+    }
+
+    @Test
+    public void joinGame_newGameStatus_joinsGameAsO_changesGameStatusToMoveX() {
+
     }
 
 }

@@ -9,11 +9,11 @@ import pl.itacademy.tictac.domain.Player;
 @RequiredArgsConstructor
 public class GameService {
     private final GameRepository gameRepository;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
 
-    public Game createGame(String playerName) {
+    public Game createGame(String playerName, String playerPassword) {
         Game game = new Game();
-        Player player = playerRepository.getByName(playerName);
+        Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
         game.setPlayerX(player);
         return game;
     }
