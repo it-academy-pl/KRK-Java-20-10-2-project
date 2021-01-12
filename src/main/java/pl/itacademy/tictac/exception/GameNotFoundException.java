@@ -1,4 +1,4 @@
-package pl.itacademy.tictac;
+package pl.itacademy.tictac.exception;
 
 public class GameNotFoundException extends RuntimeException {
     public GameNotFoundException(String message) {
