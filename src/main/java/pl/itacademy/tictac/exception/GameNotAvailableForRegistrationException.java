@@ -1,4 +1,4 @@
-package pl.itacademy.tictac;
+package pl.itacademy.tictac.exception;
 
 public class GameNotAvailableForRegistrationException extends RuntimeException {
 

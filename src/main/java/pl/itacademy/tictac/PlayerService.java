@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
 import pl.itacademy.tictac.exception.PlayerNotFoundException;
+import pl.itacademy.tictac.exception.WrongPasswordException;
 
 import java.util.Optional;
 
@@ -27,7 +28,13 @@ public class PlayerService {
     }
 
     public Player getPlayerByNameAndPassword(String name, String password) {
-        return Optional.ofNullable(playerRepository.getByName(name))
+        Player expectedPlayer = new Player(name, password);
+        Player existingPlayer = Optional.ofNullable(playerRepository.getByName(name))
                 .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+        if(expectedPlayer.equals(existingPlayer)){
+            return existingPlayer;
+        } else {
+            throw new WrongPasswordException("Wrong password! Try again!");
+        }
     }
 }
