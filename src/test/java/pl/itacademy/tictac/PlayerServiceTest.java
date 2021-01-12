@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
 import pl.itacademy.tictac.exception.PlayerNotFoundException;
-import pl.itacademy.tictac.exception.WrongPasswordsException;
+import pl.itacademy.tictac.exception.WrongPasswordException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,19 +41,18 @@ class PlayerServiceTest {
     @Test
     public void getPlayerByNameAndPassword_playerDoesNotExists_throwsPlayerNotFoundException() {
         PlayerNotFoundException exception = assertThrows(PlayerNotFoundException.class,
-                    () -> playerService.getPlayerByNameAndPassword("Jan", "Kowalski"));
+                () -> playerService.getPlayerByNameAndPassword("Jan", "Kowlaski"));
         assertThat(exception).hasMessage("Player not found");
     }
 
     @Test
     public void getPlayerByNameAndPassword_wrongPassword_throwsWrongPasswordsException() {
-//TODO: implement this method! DONE
-        Player player = new Player("Jan", "Kowalski1");
-        playerRepository.save(player);
-        WrongPasswordsException exception = assertThrows(WrongPasswordsException.class,
-                ()->playerService.getPlayerByNameAndPassword("Jan","Kowalski"));
-        assertThat(exception).hasMessage("Wrong password!");
+        Player jan = new Player("Jan", "Kowalski");
+        playerRepository.save(jan);
 
+        WrongPasswordException exception = assertThrows(WrongPasswordException.class,
+                () -> playerService.getPlayerByNameAndPassword("Jan", "Kow@lsk1"));
+        assertThat(exception.getMessage()).contains("Wrong password");
     }
 
     @Test
