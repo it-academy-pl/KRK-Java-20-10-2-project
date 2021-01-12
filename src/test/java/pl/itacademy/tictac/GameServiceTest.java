@@ -70,6 +70,21 @@ class GameServiceTest {
 
     @Test
     public void makeMove_wrongGameId_throwsGameNotFoundException() {
+       Game game = new Game();
+       gameRepository.save(game);
+
+       Player playerX = new Player("Damian", "Brodek");
+       Player playerO = new Player("Jan", "Kowalski");
+
+       playerRepository.save(playerX);
+       playerRepository.save(playerO);
+
+       game.setPlayerX(playerX);
+       game.setPlayerO(playerO);
+
+       GameNotFoundException exception = new GameNotFoundException("Wrong game id provided1");
+       assertThrows(GameNotFoundException.class, () -> gameService.makeMove(42));
+       assertThat(exception.getMessage()).contains("Wrong game id");
 
     }
 
