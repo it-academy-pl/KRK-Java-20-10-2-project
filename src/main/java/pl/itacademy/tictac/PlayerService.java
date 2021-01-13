@@ -28,13 +28,12 @@ public class PlayerService {
     }
 
     public Player getPlayerByNameAndPassword(String name, String password) {
-        Player expectedPlayer = new Player(name, password);
-        Player existingPlayer = Optional.ofNullable(playerRepository.getByName(name))
+        Player player = Optional.ofNullable(playerRepository.getByName(name))
                 .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
-        if(expectedPlayer.equals(existingPlayer)){
-            return existingPlayer;
+        if (player.getPassword().equals(password)) {
+            return player;
         } else {
-            throw new WrongPasswordException("Wrong password! Try again!");
+            throw new WrongPasswordException("Wrong password!");
         }
     }
 
