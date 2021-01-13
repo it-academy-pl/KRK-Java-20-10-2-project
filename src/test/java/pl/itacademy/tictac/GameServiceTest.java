@@ -3,12 +3,12 @@ package pl.itacademy.tictac;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Game;
+import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pl.itacademy.tictac.domain.GameStatus.MOVE_X;
-import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
+import static pl.itacademy.tictac.domain.GameStatus.*;
 
 class GameServiceTest {
 
@@ -43,18 +43,27 @@ class GameServiceTest {
         assertThat(exception.getMessage()).contains("42");
     }
 
-    //TODO: fix the implementation for make this test green
+    //TODO: fix the implementation for make this test green DONE
     @Test
     public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
         gameRepository.save(game);
-        assertThrows(GameNotAvailableForRegistrationException.class, () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
+        GameNotAvailableForRegistrationException exception = assertThrows(GameNotAvailableForRegistrationException.class,
+                () -> gameService.joinGame(game.getId(), "Jan", "Kowalski"));
+        assertThat(exception).hasMessage("Game not available to join");
     }
 
     @Test
     public void joinGame_newGameStatus_joinsGameAsO_changesGameStatusToMoveX() {
-//TODO: add the test
+//TODO: add the test DONE
+        Game game = new Game();
+        gameRepository.save(game);
+        Player joinedPlayer = new Player("Jan", "Kowalski");
+       gameService.joinGame(game.getId(), "Jan","Kowalski");
+       assertThat(joinedPlayer).isEqualTo(game.getPlayerO());
+       assertThat(game.getGameStatus().equals(MOVE_X));
+
     }
 
     @Test
