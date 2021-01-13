@@ -6,6 +6,7 @@ import pl.itacademy.tictac.domain.Game;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
+import pl.itacademy.tictac.exception.IllegalMoveException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -71,12 +72,29 @@ class GameServiceTest {
 
     @Test
     public void makeMove_wrongGameId_throwsGameNotFoundException() {
-        GameNotFoundException exception = assertThrows(GameNotFoundException.class, () -> gameService.makeMove(42, "Jan", "password"));
+        GameNotFoundException exception = assertThrows(GameNotFoundException.class, () -> gameService.makeMove(42, 0, "Jan", "password"));
         assertThat(exception.getMessage()).contains("Game not found");
     }
 
     @Test
     public void makeMove_wrongPlaceOnGrid_throwsIllegalMoveException() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+
+        char[] grid = game.getGrid();
+
+        grid[0] = 'X';
+
+        IllegalMoveException exception =
+                assertThrows(IllegalMoveException.class, () -> gameService.makeMove(game.getId(), 0, "Jan", "Kowalski"));
+        assertThat(exception).hasMessage("Cell 0 is not empty");
+
 
     }
 

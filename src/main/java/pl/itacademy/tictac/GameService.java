@@ -7,6 +7,7 @@ import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
+import pl.itacademy.tictac.exception.IllegalMoveException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +34,14 @@ public class GameService {
         }
     }
 
-    public void makeMove(long gameId, String playerName, String playerPassword) {
-        gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
+    public void makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
+        Game game =
+                gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
+        char[] grid = game.getGrid();
+        if (grid[gridPosition] != 0) {
+            throw new IllegalMoveException(String.format("Cell %d is not empty", gridPosition));
+        }
+
     }
 }
 
