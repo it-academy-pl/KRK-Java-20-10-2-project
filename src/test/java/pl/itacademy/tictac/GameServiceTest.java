@@ -3,12 +3,12 @@ package pl.itacademy.tictac;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Game;
+import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pl.itacademy.tictac.domain.GameStatus.MOVE_X;
-import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
+import static pl.itacademy.tictac.domain.GameStatus.*;
 
 class GameServiceTest {
 
@@ -49,17 +49,29 @@ class GameServiceTest {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
         gameRepository.save(game);
-        assertThrows(GameNotAvailableForRegistrationException.class, () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
+        assertThrows(GameNotAvailableForRegistrationException.class,
+                () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
     }
 
     @Test
     public void joinGame_newGameStatus_joinsGameAsO_changesGameStatusToMoveX() {
+        Game game = new Game();
+        gameService.joinGame(123, "Jan", "kowalski1234");
+        game.setGameStatus(NEW_GAME);
+        assertThat(game.getGameStatus()).isEqualTo(MOVE_X);
 //TODO: add the test
     }
 
     @Test
     public void makeMove_wrongGameId_throwsGameNotFoundException() {
+        Game game = new Game();
+        GameNotFoundException exception = assertThrows(GameNotFoundException.class,
+                () -> game.setGameStatus(MOVE_O));
+        assertThat(exception.getMessage()).isNotEqualTo(game.getId());
         //TODO: add the test
+
     }
+
+
 
 }

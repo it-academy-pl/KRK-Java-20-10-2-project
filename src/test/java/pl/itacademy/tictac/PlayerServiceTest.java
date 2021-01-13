@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.PlayerAlreadyExistsException;
 import pl.itacademy.tictac.exception.PlayerNotFoundException;
+import pl.itacademy.tictac.exception.PlayerWrongPasswordException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,6 +47,14 @@ class PlayerServiceTest {
 
     @Test
     public void getPlayerByNameAndPassword_wrongPassword_throwsWrongPasswordsException() {
+        Player jan = new Player("Jan", "kowalski1234");
+        playerRepository.save(jan);
+
+        PlayerWrongPasswordException exception = assertThrows(PlayerWrongPasswordException.class,
+                () -> playerService.getPlayerByNameAndPassword("Jan", "kowalski1234"));
+        assertThat(exception).isNotEqualTo(jan);
+
+
 //TODO: implement this method!
     }
 
