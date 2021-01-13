@@ -2,7 +2,10 @@ package tictactoe.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tictactoe.model.User;
 import tictactoe.service.UserService;
+
+import java.util.UUID;
 
 @RequestMapping("api/user")
 @RestController
@@ -14,14 +17,20 @@ public class UserController {
         this.userService = userService;
     }
 
+//    @PostMapping
+//    public void registerNewUser(@RequestParam("name") String name, @RequestParam("password") String password) {
+//        userService.registerNewUser(name, password);
+//    }
+
     @PostMapping
-    public void registerNewUser(@RequestParam("name") String name, @RequestParam("password") String password) {
-        userService.registerNewUser(name, password);
+    public void registerNewUser(@RequestBody User user) {
+        userService.registerNewUser(user);
     }
 
+    @GetMapping(path = "{id}")
     @DeleteMapping
-    public void removeUser(String name) {
-        userService.removeUser(name);
+    public void removeUser(@PathVariable("id") UUID id) {
+        userService.removeUser(id);
     }
 
     @GetMapping

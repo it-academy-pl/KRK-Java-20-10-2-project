@@ -1,22 +1,27 @@
 package tictactoe.model;
 
-import demo.Game;
-
 import java.util.Objects;
+import java.util.UUID;
 
-class Lobby {
+public class Lobby {
     private final String name;
+    private final UUID id;
     private int numberOfPlayers;
     private final Game game;
 
     public Lobby(String name) {
         this.name = name;
+        this.id = UUID.randomUUID();
         this.numberOfPlayers = 0;
         this.game = new Game();
     }
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public int getNumberOfPlayers() {

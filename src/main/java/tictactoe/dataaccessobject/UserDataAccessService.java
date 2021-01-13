@@ -7,27 +7,26 @@ import tictactoe.model.User;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
-@Repository("dao")
+@Repository("userDao")
 public class UserDataAccessService implements UserDao {
 
     private static final List<User> registeredUsersDB = new ArrayList<>();
 
     @Override
-    public boolean registerNewUser(String name, String password) {
-        for(User user : registeredUsersDB) {
-            if(user.getName().equals(name)) {
-                throw new UserAlreadyRegisteredException(name);
-//                return false;
-            }
+    public boolean registerNewUser(User user) {
+        if(registeredUsersDB.stream().anyMatch(registeredUser -> registeredUser.getId().equals(user.getId()))) {
+            throw new UserAlreadyRegisteredException(user.getName());
+//            return false;
         }
-        registeredUsersDB.add(new User(name,password));
+        registeredUsersDB.add(user);
         return true;
     }
 
     @Override
-    public boolean removeUser(String name) {
-        return registeredUsersDB.removeIf(user -> user.getName().equals(name));
+    public boolean removeUser(UUID id) {
+        return registeredUsersDB.removeIf(user -> user.getId().equals(id));
     }
 
     @Override

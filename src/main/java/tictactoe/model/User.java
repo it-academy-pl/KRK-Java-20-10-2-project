@@ -3,12 +3,12 @@ package tictactoe.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
+import java.util.UUID;
 
-public class User implements Comparable<User> {
-
-    //TODO: implement ID with "UUID"
+public class User {
     private final String name;
     private final Password password;
+    private final UUID id;
     private final Score playerScore;
     private Lobby activeLobby;
 
@@ -16,12 +16,17 @@ public class User implements Comparable<User> {
                 @JsonProperty("password") String password) {
         this.name = name;
         this.password = new Password(password);
+        this.id = UUID.randomUUID();
         this.playerScore = new Score();
         this.activeLobby = null;
     }
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public boolean logIn(String password) {
@@ -68,10 +73,5 @@ public class User implements Comparable<User> {
     @Override
     public int hashCode() {
         return Objects.hash(name, password, playerScore);
-    }
-
-    @Override
-    public int compareTo(User o) {
-        return o.getName().compareTo(name);
     }
 }

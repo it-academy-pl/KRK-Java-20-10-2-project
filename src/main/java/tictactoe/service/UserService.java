@@ -7,22 +7,23 @@ import tictactoe.dataaccessobject.UserDao;
 import tictactoe.model.User;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
     private final UserDao userDao;
 
     @Autowired
-    public UserService(@Qualifier("dao") UserDao userDao) {
+    public UserService(@Qualifier("userDao") UserDao userDao) {
         this.userDao = userDao;
     }
 
-    public boolean registerNewUser(String name, String password) {
-        return userDao.registerNewUser(name, password);
+    public boolean registerNewUser(User user) {
+        return userDao.registerNewUser(user);
     }
 
-    public boolean removeUser(String name) {
-        return userDao.removeUser(name);
+    public boolean removeUser(UUID id) {
+        return userDao.removeUser(id);
     }
 
     public List<User> getRegisteredUsers() {
