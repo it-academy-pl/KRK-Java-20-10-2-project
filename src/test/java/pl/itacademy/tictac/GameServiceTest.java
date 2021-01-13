@@ -97,7 +97,22 @@ class GameServiceTest {
 
     @Test
     public void makeMove_playerNotParticipatingInTheGame_throwsGameNotFoundException() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
 
+        Player cheater = new Player("Ryszard", "Ryszard123");
+        playerRepository.save(cheater);
+        game.setGameStatus(MOVE_X);
+
+        GameNotFoundException exception =
+                assertThrows(GameNotFoundException.class, () -> gameService.makeMove(game.getId(), 0, "Ryszard", "Ryszard123"));
+        assertThat(exception).hasMessage("Wrong game.");
     }
 
     @Test

@@ -36,6 +36,12 @@ public class GameService {
     public void makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
         Game game =
                 gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
+
+        Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+        if(!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
+            throw new GameNotFoundException("Wrong game.");
+        }
+
         char[] grid = game.getGrid();
         if (grid[gridPosition] != 0) {
             throw new IllegalMoveException(String.format("Cell %d is not empty", gridPosition));
