@@ -115,6 +115,7 @@ class GameServiceTest {
         assertThat(exception).hasMessage("Wrong game.");
     }
 
+    //TODO: Implement test cases together with GameService method implementation
     @Test
     public void makeMove_wrongPlayerTurn_throwsIllegalMoveException() {
 
@@ -131,7 +132,12 @@ class GameServiceTest {
     }
 
     @Test
-    public void makeMove_legalMove_gameStatusChangesToAnotherPlayer() {
+    public void makeMove_legalMoveX_gameStatusChangesToAnotherPlayer() {
+
+    }
+
+    @Test
+    public void makeMove_legalMoveO_gameStatusChangesToAnotherPlayer() {
 
     }
 

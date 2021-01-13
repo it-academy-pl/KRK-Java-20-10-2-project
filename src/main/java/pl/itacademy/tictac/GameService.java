@@ -22,7 +22,7 @@ public class GameService {
         return game;
     }
 
-    public void joinGame(long gameId, String playerName, String playerPassword) {
+    public Game joinGame(long gameId, String playerName, String playerPassword) {
         Game game = gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", gameId)));
         if (game.getGameStatus() != GameStatus.NEW_GAME) {
             throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", gameId));
@@ -31,14 +31,15 @@ public class GameService {
             game.setPlayerO(joinedPlayer);
             game.setGameStatus(GameStatus.MOVE_X);
         }
+        return game;
     }
 
-    public void makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
+    public Game makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
         Game game =
                 gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
 
         Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
-        if(!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
+        if (!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
             throw new GameNotFoundException("Wrong game.");
         }
 
@@ -47,5 +48,6 @@ public class GameService {
             throw new IllegalMoveException(String.format("Cell %d is not empty", gridPosition));
         }
 
+        return game;
     }
 }
