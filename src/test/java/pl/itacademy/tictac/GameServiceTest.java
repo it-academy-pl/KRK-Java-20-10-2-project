@@ -88,13 +88,15 @@ class GameServiceTest {
         game.setPlayerX(playerX);
 
         char[] grid = game.getGrid();
-
         grid[0] = 'X';
 
         IllegalMoveException exception =
                 assertThrows(IllegalMoveException.class, () -> gameService.makeMove(game.getId(), 0, "Jan", "Kowalski"));
         assertThat(exception).hasMessage("Cell 0 is not empty");
+    }
 
+    @Test
+    public void makeMove_playerNotParticipatingInTheGame_throwsGameNotFoundException() {
 
     }
 
