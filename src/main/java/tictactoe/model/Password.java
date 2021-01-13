@@ -1,4 +1,4 @@
-package data;
+package tictactoe.model;
 
 public final class Password {
     private static final long key = 6745902892214988737L;

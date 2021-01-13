@@ -1,4 +1,4 @@
-package data;
+package tictactoe.model;
 
 public class Score {
     private long gamesPlayed;

@@ -1,4 +1,4 @@
-package data;
+package demo;
 
 public enum GameStatus {
     NEW_GAME,

@@ -1,4 +1,6 @@
-package data;
+package tictactoe.model;
+
+import demo.Game;
 
 import java.util.Objects;
 

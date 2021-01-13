@@ -1,15 +1,19 @@
-package data;
+package tictactoe.model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class Player implements Comparable<Player> {
+public class User implements Comparable<User> {
+
+    //TODO: implement ID with "UUID"
     private final String name;
     private final Password password;
     private final Score playerScore;
     private Lobby activeLobby;
 
-
-    public Player(String name, String password) {
+    public User(@JsonProperty("name") String name,
+                @JsonProperty("password") String password) {
         this.name = name;
         this.password = new Password(password);
         this.playerScore = new Score();
@@ -41,7 +45,7 @@ public class Player implements Comparable<Player> {
         }
     }
 
-    public Score getPlayerScore() {
+    public Score getUserScore() {
         return new Score(playerScore.getGamesPlayed(), playerScore.getWins(), playerScore.getDraws(), playerScore.getLoses());
     }
 
@@ -57,7 +61,7 @@ public class Player implements Comparable<Player> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Player player = (Player) o;
+        User player = (User) o;
         return Objects.equals(name, player.name) && Objects.equals(password, player.password) && Objects.equals(playerScore, player.playerScore);
     }
 
@@ -67,7 +71,7 @@ public class Player implements Comparable<Player> {
     }
 
     @Override
-    public int compareTo(Player o) {
+    public int compareTo(User o) {
         return o.getName().compareTo(name);
     }
 }
