@@ -3,14 +3,14 @@ package pl.itacademy.tictac;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Game;
-import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pl.itacademy.tictac.domain.GameStatus.*;
+import static pl.itacademy.tictac.domain.GameStatus.MOVE_X;
+import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
 
 class GameServiceTest {
 
@@ -45,47 +45,73 @@ class GameServiceTest {
         assertThat(exception.getMessage()).contains("42");
     }
 
-
     @Test
     public void joinGame_notNewGameStatus_throwsGameNotAvailableForRegistrationException() {
         Game game = new Game();
         game.setGameStatus(MOVE_X);
         gameRepository.save(game);
-        GameNotAvailableForRegistrationException exception = new GameNotAvailableForRegistrationException("Game is not available to join!");
-        assertThrows(GameNotAvailableForRegistrationException.class,
-                () -> gameService.joinGame(game.getId(), "Jan", "Kowalski1234"));
-        assertThat(exception.getMessage()).contains("Game is not available");
+        GameNotAvailableForRegistrationException exception = assertThrows(GameNotAvailableForRegistrationException.class,
+                () -> gameService.joinGame(game.getId(), "Jan", "Kowalski"));
+        assertThat(exception).hasMessage("The game 2 has already started!");
     }
 
     @Test
     public void joinGame_newGameStatus_joinsGameAsO_changesGameStatusToMoveX() {
         Game game = new Game();
         gameRepository.save(game);
-        Player joinedPlayer = new Player("Jan", "Kowalski");
-        gameService.joinGame(game.getId(),"Jan", "Kowalski");
-        assertThat(joinedPlayer).isEqualTo(game.getPlayerO());
-        assertThat(game.getGameStatus()).isEqualTo(MOVE_X);
 
+        Player playerO = new Player("Eva", "Nowak");
+        playerRepository.save(playerO);
+
+        gameService.joinGame(game.getId(), "Eva", "Nowak");
+
+        assertThat(game.getGameStatus()).isEqualTo(MOVE_X);
+        assertThat(game.getPlayerO()).isEqualTo(playerO);
     }
 
     @Test
     public void makeMove_wrongGameId_throwsGameNotFoundException() {
-       Game game = new Game();
-       gameRepository.save(game);
+        GameNotFoundException exception = assertThrows(GameNotFoundException.class, () -> gameService.makeMove(42, "Jan", "password"));
+        assertThat(exception.getMessage()).contains("Game not found");
+    }
 
-       Player playerX = new Player("Damian", "Brodek");
-       Player playerO = new Player("Jan", "Kowalski");
-
-       playerRepository.save(playerX);
-       playerRepository.save(playerO);
-
-       game.setPlayerX(playerX);
-       game.setPlayerO(playerO);
-
-       GameNotFoundException exception = new GameNotFoundException("Wrong game id provided1");
-       assertThrows(GameNotFoundException.class, () -> gameService.makeMove(42));
-       assertThat(exception.getMessage()).contains("Wrong game id");
+    @Test
+    public void makeMove_wrongPlaceOnGrid_throwsIllegalMoveException() {
 
     }
 
+    @Test
+    public void makeMove_wrongPlayerTurn_throwsIllegalMoveException() {
+
+    }
+
+    @Test
+    public void makeMove_gameNotStarted_throwsIllegalMoveException() {
+
+    }
+
+    @Test
+    public void makeMove_gameFinished_throwsIllegalMoveException() {
+
+    }
+
+    @Test
+    public void makeMove_legalMove_gameStatusChangesToAnotherPlayer() {
+
+    }
+
+    @Test
+    public void makeMove_legalMove_gameCanBeFinishedWithDraw() {
+
+    }
+
+    @Test
+    public void makeMove_legalMove_gameCanBeFinishedWithXWon() {
+
+    }
+
+    @Test
+    public void makeMove_legalMove_gameCanBeFinishedWithOWon() {
+
+    }
 }

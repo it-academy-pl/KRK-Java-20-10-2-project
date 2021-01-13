@@ -47,12 +47,11 @@ class PlayerServiceTest {
 
     @Test
     public void getPlayerByNameAndPassword_wrongPassword_throwsWrongPasswordsException() {
-        Player jan = new Player("Jan", "Kowalski");
-        playerRepository.save(jan);
-
+        Player player = new Player("Jan", "Kowalski1");
+        playerRepository.save(player);
         WrongPasswordException exception = assertThrows(WrongPasswordException.class,
-                () -> playerService.getPlayerByNameAndPassword("Jan", "Kow@lsk1"));
-        assertThat(exception.getMessage()).contains("Wrong password");
+                () -> playerService.getPlayerByNameAndPassword("Jan", "Kowalski"));
+        assertThat(exception).hasMessage("Wrong password!");
     }
 
     @Test

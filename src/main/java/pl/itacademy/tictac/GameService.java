@@ -8,8 +8,6 @@ import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -24,34 +22,19 @@ public class GameService {
         return game;
     }
 
-    public void joinGame(long id, String playerName, String playerPassword) {
-
-
-        if (!gameRepository.getById(id).isPresent()) {
-            throw new GameNotFoundException(String.format("Game %d not found", id));
-        } else if (gameRepository.getById(id).get().getGameStatus() != GameStatus.NEW_GAME) {
-            throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", id));
+    public void joinGame(long gameId, String playerName, String playerPassword) {
+        Game game = gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", gameId)));
+        if (game.getGameStatus() != GameStatus.NEW_GAME) {
+            throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", gameId));
         } else {
-            Player joinedPlayer =
-                    new Player(playerName, playerPassword);
-            gameRepository.getById(id).get().setPlayerO(joinedPlayer);
-            gameRepository.getById(id).get().setGameStatus(GameStatus.MOVE_X);
+            Player joinedPlayer = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+            game.setPlayerO(joinedPlayer);
+            game.setGameStatus(GameStatus.MOVE_X);
         }
     }
 
-    public void makeMove(long id) { //add Player player to arguments
-        if (!gameRepository.getById(id).isPresent()) {
-            throw new GameNotFoundException("Wrong game id provided");
-            // } else if((gameRepository.getById(id).get().getGameStatus() != GameStatus.MOVE_X) && (!player.equals(gameRepository.getById(id).get().getPlayerX()))) {
-            //     //throw wrong player exception
-            //     System.out.println("Not player X turn!");
-            // } else if((gameRepository.getById(id).get().getGameStatus() != GameStatus.MOVE_O) && (!player.equals(gameRepository.getById(id).get().getPlayerO()))) {
-            //     //throw wrong player exception
-            //     System.out.println("Not player O turn!");
-            // } else {
-            //     System.out.println("Player has made a move");
-            // }
-        }
+    public void makeMove(long gameId, String playerName, String playerPassword) {
+        gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
     }
 }
 
