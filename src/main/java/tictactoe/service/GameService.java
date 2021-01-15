@@ -55,8 +55,8 @@ public class GameService {
         gameDao.jointCreatedLobby(lobbyName, userName);
     }
 
-    public boolean joinCreatedLobby(UUID lobbyID, UUID playerID) {
-        return gameDao.joinCreatedLobby(lobbyID, playerID);
+    public boolean joinCreatedLobby(UUID lobbyID, UUID userID) {
+        return gameDao.joinCreatedLobby(lobbyID, userID);
     }
 
     public void leaveLobby(UUID userID) {

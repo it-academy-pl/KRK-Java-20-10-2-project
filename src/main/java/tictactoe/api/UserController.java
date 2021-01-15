@@ -7,7 +7,7 @@ import tictactoe.service.UserService;
 
 import java.util.UUID;
 
-@RequestMapping("api/user")
+@RequestMapping("/user")
 @RestController
 public class UserController {
     private final UserService userService;

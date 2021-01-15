@@ -1,13 +1,14 @@
 package tictactoe.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tictactoe.model.Coordinates;
 import tictactoe.service.GameService;
 
 import java.util.UUID;
 
-@RequestMapping("api/game")
+@RequestMapping("/game")
 @RestController
 public class GameController {
     private final GameService gameService;
@@ -17,79 +18,94 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    //TODO: finish mapping and @RequestParam()
-    @PostMapping
+    @PostMapping("/sing")
     public void logInUser(@RequestParam("userName") String userName,@RequestParam("password") String password) {
         gameService.logInUser(userName, password);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/sing")
     public void logOutUser(@RequestParam("userName") String userName) {
         gameService.logOutUser(userName);
     }
 
-    @GetMapping
-    public void searchForLoggedInUserID(@RequestParam("userName") String userName) {
-        gameService.searchForLoggedInUserID(userName);
+    @GetMapping("/search/userid")
+    public ResponseEntity<SearchUserIDResponse> searchForLoggedInUserID(@RequestParam("userName") String userName) {
+        UUID userID = gameService.searchForLoggedInUserID(userName);
+        return ResponseEntity.ok(SearchUserIDResponse.fromID(userID));
     }
 
-    @GetMapping
+    @GetMapping("/search/lobbyid")
     public void searchForCreatedLobbiesID(@RequestParam("lobbyName") String lobbyName) {
         gameService.searchForCreatedLobbiesID(lobbyName);
     }
 
-    @GetMapping
+    @GetMapping("/get/userid")
     public void getUserFromID(@RequestParam("userID") UUID id) {
         gameService.getUserFromID(id);
     }
 
-    @GetMapping
+    @GetMapping("/get/lobbyid")
     public void getLobbyFromID(@RequestParam("lobbyID") UUID id) {
         gameService.getLobbyFromID(id);
     }
 
-    @PostMapping
-    public void createNewLobby(String lobbyName, String userName) {
+    @PostMapping("/createlobby/withuser")
+    public void createNewLobby(@RequestParam("lobbyName") String lobbyName,@RequestParam("userName") String userName) {
         gameService.createNewLobby(lobbyName, userName);
     }
 
-    @PostMapping
+    @PostMapping("/createlobby/withuserid")
     public void createNewLobby(@RequestParam("lobbyName") String lobbyName,@RequestParam("creatorID") UUID creatorID) {
         gameService.createNewLobby(lobbyName, creatorID);
     }
 
-    @PutMapping
-    public void jointCreatedLobby(String lobbyName, String userName) {
+    @PutMapping("/joinlobby/withuser")
+    public void jointCreatedLobby(@RequestParam("lobbyName") String lobbyName,@RequestParam("userName") String userName) {
         gameService.jointCreatedLobby(lobbyName, userName);
     }
 
-    @PutMapping
-    public void joinCreatedLobby(UUID lobbyID, UUID playerID) {
-        gameService.joinCreatedLobby(lobbyID, playerID);
+    @PutMapping("/joinlobby/withuserid")
+    public void joinCreatedLobby(@RequestParam("lobbyID") UUID lobbyID,@RequestParam("userID") UUID userID) {
+        gameService.joinCreatedLobby(lobbyID, userID);
     }
 
-    @PutMapping
-    public void leaveLobby(UUID userID) {
+    @DeleteMapping(path = "{id}")
+    public void leaveLobby(@PathVariable("id") UUID userID) {
         gameService.leaveLobby(userID);
     }
 
-    @PutMapping
-    public void startGame(UUID firstUserID, UUID secondUserID) {
+    @PutMapping("/start")
+    public void startGame(@RequestParam("firstUserID") UUID firstUserID,@RequestParam("secondUserID") UUID secondUserID) {
         gameService.startGame(firstUserID, secondUserID);
     }
 
-    @PutMapping
-    public void makeMove(UUID userID, Coordinates coordinates) {
+    @PutMapping("/move")
+    public void makeMove(@RequestParam("userID") UUID userID,@RequestBody Coordinates coordinates) {
         gameService.makeMove(userID, coordinates);
     }
 
-    @GetMapping
-    public void printLobbyGrid(UUID lobbyID) {
+    @GetMapping("/grid")
+    public void printLobbyGrid(@RequestParam("lobbyID") UUID lobbyID) {
         gameService.printLobbyGrid(lobbyID);
     }
 
-    @GetMapping
-    public void lobbyGameFinished(UUID lobbyID) {
+    @GetMapping("/status")
+    public void lobbyGameFinished(@RequestParam("lobbyID") UUID lobbyID) {
         gameService.lobbyGameFinished(lobbyID);
+    }
+
+    //FIXME: doesn't show anything
+    private static class SearchUserIDResponse {
+        private final UUID userID;
+
+        public SearchUserIDResponse(UUID userID) {
+            this.userID = userID;
+        }
+
+        public static SearchUserIDResponse fromID(UUID userID) {
+            return new GameController.SearchUserIDResponse(
+                    userID
+            );
+        }
     }
 }

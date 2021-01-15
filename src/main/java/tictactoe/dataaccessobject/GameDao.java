@@ -20,7 +20,7 @@ public interface GameDao {
     void createNewLobby(String lobbyName, UUID creatorID);
 
     void jointCreatedLobby(String lobbyName, String userName);
-    boolean joinCreatedLobby(UUID lobbyID, UUID playerID);
+    boolean joinCreatedLobby(UUID lobbyID, UUID userID);
 
     void leaveLobby(UUID userID);
 

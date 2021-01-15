@@ -16,7 +16,6 @@ public class GameDataAccessService implements GameDao {
     private static final List<User> loggedInUsersDB = new ArrayList<>();
     private static final List<Lobby> createdLobbiesDB = new ArrayList<>();
 
-    //TODO: add bean scope
     private final UserDao userDao;
 
     public GameDataAccessService(UserDao userDao) {
@@ -66,7 +65,7 @@ public class GameDataAccessService implements GameDao {
         Optional<User> foundUser = loggedInUsersDB.stream()
                 .filter(user -> user.getName().equals(userName))
                 .findFirst();
-        //TODO: fix optional implementation ?
+        //FIXME: fix optional ?
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -79,7 +78,7 @@ public class GameDataAccessService implements GameDao {
                 .filter(user -> user.getName().equals(lobbyName))
                 .findFirst();
 
-        //TODO: fix optional ?
+        //FIXME: fix optional ?
         if(createdLobby.isEmpty()) {
             throw new LobbyNotFoundException();
         }
@@ -125,9 +124,9 @@ public class GameDataAccessService implements GameDao {
     }
 
     @Override
-    public boolean joinCreatedLobby(UUID lobbyID, UUID playerID) {
+    public boolean joinCreatedLobby(UUID lobbyID, UUID userID) {
         Optional<User> userOptional = loggedInUsersDB.stream()
-                .filter(user -> user.getId().equals(playerID))
+                .filter(user -> user.getId().equals(userID))
                 .findFirst();
 
         if(userOptional.isPresent() && userOptional.get().getActiveLobby() != null) {
@@ -137,7 +136,7 @@ public class GameDataAccessService implements GameDao {
         for(Lobby lobby : createdLobbiesDB) {
             if(lobby.getId().equals(lobbyID) && lobby.getNumberOfPlayers() < 2) {
                 lobby.join();
-                User user = getUserFromID(playerID);
+                User user = getUserFromID(userID);
                 lobby.getGame().join(user);
                 user.setActiveLobby(lobby);
                 return true;
