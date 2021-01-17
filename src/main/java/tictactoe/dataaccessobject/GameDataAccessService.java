@@ -186,6 +186,10 @@ public class GameDataAccessService implements GameDao {
     public boolean makeMove(UUID userID, Coordinates coordinates) {
         User user = getUserFromID(userID);
 
+        if(user.getActiveLobby() == null) {
+            throw new LobbyNotFoundException();
+        }
+
         boolean moveCompleted = user.getActiveLobby().getGame().makeMove(user, coordinates);
         if(user.getActiveLobby().getGame().isFinish()) {
             System.out.println("Game Over!");

@@ -11,5 +11,5 @@ public interface UserDao {
     List<User> getRegisteredUsers();
 }
 
-//TODO: add: update
-//TODO: add: select
+//TODO: optional add: update
+//TODO: optional add: select

@@ -5,28 +5,28 @@ import tictactoe.exceptions.GameNotStartedException;
 import tictactoe.exceptions.LobbyIsFullException;
 import tictactoe.exceptions.NotEnoughtPlayersInLobbyException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Game {
-    private final Map<User, Symbol> lobby;
+    private final Map<User, Symbol> inGameLobby;
     private final int[][] grid;
     private Symbol currentSymbolPlayed;
     private boolean gameStarted;
     private boolean finish;
+    private GameStatus gameStatus;
 
-    enum Symbol{
+    public enum Symbol{
         X,
         O
     }
 
     public Game() {
-        this.lobby = new HashMap<>();
+        this.inGameLobby = new HashMap<>();
         this.grid = new int[3][3];
         this.currentSymbolPlayed = Symbol.O;
-        gameStarted = false;
-        finish = false;
+        this.gameStarted = false;
+        this.finish = false;
+        this.gameStatus = GameStatus.IDLE;
     }
 
     public Symbol getCurrentSymbolPlayed() {
@@ -41,16 +41,27 @@ public class Game {
         return finish;
     }
 
+    public GameStatus getGameStatus() {
+        return gameStatus;
+    }
+
+    public Map<User, Symbol> getInGameLobby() {
+        return Collections.unmodifiableMap(inGameLobby);
+    }
+
     public void join(User user) {
-        if(lobby.size() < 2) {
-            lobby.put(user, (lobby.size() == 0 ? Symbol.X : Symbol.O));
+        if(inGameLobby.size() < 2) {
+            inGameLobby.put(user, (inGameLobby.size() == 0 ? Symbol.X : Symbol.O));
+
+            gameStatus = GameStatus.NEW_GAME;
+
         } else {
             throw new LobbyIsFullException();
         }
     }
 
     public void leave(User user) {
-        lobby.remove(user);
+        inGameLobby.remove(user);
 
         if(gameStarted) {
             user.saveGameResult(-1);
@@ -59,9 +70,12 @@ public class Game {
     }
 
     public void startGame() {
-        if(!gameStarted && (lobby.size() == 2)) {
+        if(!gameStarted && (inGameLobby.size() == 2)) {
             gameStarted = true;
-        } else if(gameStarted && (lobby.size() == 2)) {
+
+            gameStatus = GameStatus.MOVE_X;
+
+        } else if(gameStarted && (inGameLobby.size() == 2)) {
             throw new GameHasAlreadyStartedException();
         } else {
             throw new NotEnoughtPlayersInLobbyException();
@@ -92,10 +106,17 @@ public class Game {
             return true;
         }
 
-        Symbol playerSymbol = lobby.get(user);
+        Symbol playerSymbol = inGameLobby.get(user);
         if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getX()][coordinates.getY()] == 0) {
             grid[coordinates.getY()][coordinates.getX()] = getPlayersSymbol(playerSymbol);
             currentSymbolPlayed = playerSymbol;
+
+            if(currentSymbolPlayed.equals(Symbol.O)) {
+                gameStatus = GameStatus.MOVE_X;
+            } else {
+                gameStatus = GameStatus.MOVE_O;
+            }
+
             if(winCheck()) {
                 finish = true;
                 gameStarted = false;
@@ -108,7 +129,7 @@ public class Game {
 
     private void endSettledGame(User user) {
         user.saveGameResult(1);
-        for(Map.Entry<User, Symbol> userEntry : lobby.entrySet()) {
+        for(Map.Entry<User, Symbol> userEntry : inGameLobby.entrySet()) {
             if(!userEntry.getKey().equals(user)) {
                 userEntry.getKey().saveGameResult(-1);
             }
@@ -116,9 +137,11 @@ public class Game {
     }
 
     private void endDrawGame() {
-        for(Map.Entry<User, Symbol> userEntry : lobby.entrySet()) {
+        for(Map.Entry<User, Symbol> userEntry : inGameLobby.entrySet()) {
             userEntry.getKey().saveGameResult(0);
         }
+
+        gameStatus = GameStatus.DRAW;
     }
 
     private char getPlayersSymbol(Symbol symbol) {
@@ -128,6 +151,7 @@ public class Game {
         return 'o';
     }
 
+    //TODO: upgrade method by deleting repeating code
     private boolean winCheck() {
         ArrayList<Integer> fields = new ArrayList<>();
         //*****************************
@@ -137,8 +161,10 @@ public class Game {
             }
             if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
                 if(fields.get(0) == 120) {
+                    gameStatus = GameStatus.X_WON;
                     System.out.println("x won");
                 } else {
+                    gameStatus = GameStatus.O_WON;
                     System.out.println("o won");
                 }
                 return true;
@@ -152,8 +178,10 @@ public class Game {
             }
             if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
                 if(fields.get(0) == 120) {
+                    gameStatus = GameStatus.X_WON;
                     System.out.println("x won");
                 } else {
+                    gameStatus = GameStatus.O_WON;
                     System.out.println("o won");
                 }
                 return true;
@@ -166,8 +194,10 @@ public class Game {
         }
         if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
             if(fields.get(0) == 120) {
+                gameStatus = GameStatus.X_WON;
                 System.out.println("x won");
             } else {
+                gameStatus = GameStatus.O_WON;
                 System.out.println("o won");
             }
             return true;
@@ -179,8 +209,10 @@ public class Game {
         }
         if(fields.get(0).equals(fields.get(1)) && fields.get(0).equals(fields.get(2)) && !fields.get(0).equals(0)) {
             if(fields.get(0) == 120) {
+                gameStatus = GameStatus.X_WON;
                 System.out.println("x won");
             } else {
+                gameStatus = GameStatus.O_WON;
                 System.out.println("o won");
             }
             return true;
