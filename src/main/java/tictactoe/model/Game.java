@@ -107,7 +107,7 @@ public class Game {
         }
 
         Symbol playerSymbol = inGameLobby.get(user);
-        if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getX()][coordinates.getY()] == 0) {
+        if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getY()][coordinates.getX()] == 0) {
             grid[coordinates.getY()][coordinates.getX()] = getPlayersSymbol(playerSymbol);
             currentSymbolPlayed = playerSymbol;
 
@@ -121,6 +121,26 @@ public class Game {
                 finish = true;
                 gameStarted = false;
                 endSettledGame(user);
+            }
+
+            //TODO: remove repeating code
+            freeSpaceFlag = false;
+            for(int[] ints : grid) {
+                if(freeSpaceFlag) {
+                    break;
+                }
+                for(int anInt : ints) {
+                    if(anInt == 0) {
+                        freeSpaceFlag = true;
+                        break;
+                    }
+                }
+            }
+            if(!freeSpaceFlag) {
+                finish = true;
+                gameStarted = false;
+                endDrawGame();
+                return true;
             }
             return true;
         }

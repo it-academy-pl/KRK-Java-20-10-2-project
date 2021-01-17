@@ -6,6 +6,7 @@ import tictactoe.dataaccessobject.GameDao;
 import tictactoe.dataaccessobject.GameDataAccessService;
 import tictactoe.dataaccessobject.UserDao;
 import tictactoe.dataaccessobject.UserDataAccessService;
+import tictactoe.exceptions.GameNotStartedException;
 import tictactoe.exceptions.LobbyIsFullException;
 import tictactoe.exceptions.LobbyNotFoundException;
 import tictactoe.model.*;
@@ -22,11 +23,12 @@ class GameServiceTest {
     private GameDao gameDao;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         userDao = new UserDataAccessService();
         gameDao = new GameDataAccessService(userDao);
     }
 
+    //FIXME: singleton class is blocking me from executing test all at once
     @Test
     public void createNewLobby_existingUser_createNewLobbyForGameWithUser() {
         User user = new User("Jan", "kowalski");
@@ -171,42 +173,211 @@ class GameServiceTest {
 
     //TODO: Implement test cases together with GameService method implementation
     @Test
-    public void makeMove_wrongPlayerTurn_throwsIllegalMoveException() {
+    public void makeMove_wrongPlayerTurn_returnsFalse() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0, 0));
+
+        assertThat(gameDao.makeMove(firstUser.getId(), new Coordinates(1,0))).isEqualTo(false);
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.MOVE_O);
+
+        Game.Symbol testUserSymbol = null;
+        for(Map.Entry<User, Game.Symbol> mapEntry : lobby.getGame().getInGameLobby().entrySet()) {
+            if(mapEntry.getKey().equals(firstUser)) {
+                testUserSymbol = mapEntry.getValue();
+            }
+        }
+        assertThat(testUserSymbol).isEqualTo(Game.Symbol.X);
     }
 
     @Test
-    public void makeMove_gameNotStarted_throwsIllegalMoveException() {
+    public void makeMove_gameNotStarted_throwsGameNotStartedException() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+
+        GameNotStartedException exception = assertThrows(GameNotStartedException.class,
+                () -> gameDao.makeMove(firstUser.getId(), new Coordinates(0, 0)));
+        assertThat(exception).hasMessage("Game not started.");
     }
 
     @Test
-    public void makeMove_gameFinished_throwsIllegalMoveException() {
+    public void makeMove_gameFinished_throwsGameNotStartedException() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(0,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(1,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(1,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(2,0));
+
+        GameNotStartedException exception = assertThrows(GameNotStartedException.class,
+                () -> gameDao.makeMove(secondUser.getId(), new Coordinates(2,1)));
+        assertThat(exception).hasMessage("Game not started.");
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.X_WON);
     }
 
     @Test
     public void makeMove_legalMoveX_gameStatusChangesToAnotherPlayer() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.MOVE_O);
     }
 
     @Test
     public void makeMove_legalMoveO_gameStatusChangesToAnotherPlayer() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(0,1));
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.MOVE_X);
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithDraw() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(0,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(1,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(1,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,2));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(2,0));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(1,2));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(2,2));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(2,1));
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.DRAW);
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithXWon() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(0,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(1,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(1,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(2,0));
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.X_WON);
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithOWon() {
+        User firstUser = new User("Janusz", "omegalol");
+        User secondUser = new User("Janina", "dziew34");
 
+        userDao.registerNewUser(firstUser);
+        userDao.registerNewUser(secondUser);
+
+        gameDao.logInUser("Janusz", "omegalol");
+        gameDao.logInUser("Janina", "dziew34");
+
+        gameDao.createNewLobby("QuickGame", firstUser.getId());
+        gameDao.jointCreatedLobby("QuickGame", secondUser.getName());
+        gameDao.startGame(firstUser.getId(), secondUser.getId());
+
+        gameDao.makeMove(firstUser.getId(), new Coordinates(0,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(0,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(1,0));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(1,1));
+        gameDao.makeMove(firstUser.getId(), new Coordinates(2,2));
+        gameDao.makeMove(secondUser.getId(), new Coordinates(2,1));
+
+        UUID lobbyID = gameDao.searchForCreatedLobbiesID("QuickGame");
+        Lobby lobby = gameDao.getLobbyFromID(lobbyID);
+        assertThat(lobby.getGame().getGameStatus()).isEqualTo(GameStatus.O_WON);
     }
 }
