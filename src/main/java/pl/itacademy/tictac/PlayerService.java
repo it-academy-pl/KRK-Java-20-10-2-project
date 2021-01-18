@@ -39,4 +39,9 @@ public class PlayerService {
 
         }
     }
+
+    public Player getByName(String name){
+       Player player = playerRepository.getByName(name);
+       return player;
+    }
 }

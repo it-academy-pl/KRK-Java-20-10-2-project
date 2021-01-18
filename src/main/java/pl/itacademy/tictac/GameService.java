@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import pl.itacademy.tictac.domain.Game;
 import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
-import pl.itacademy.tictac.exception.PlayerNotFoundException;
-
-import java.util.Optional;
+import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
+import pl.itacademy.tictac.exception.GameNotFoundException;
+import pl.itacademy.tictac.exception.IllegalMoveException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,16 +22,42 @@ public class GameService {
         return game;
     }
 
-    public void joinGame(long id, String playerName, String playerPassword) {
-        if(gameRepository.getById(id).isEmpty()) {
-            throw new GameNotFoundException(String.format("Game %d not found", id));
-        }else if(gameRepository.getById(id).get().getGameStatus() != GameStatus.NEW_GAME){
-            throw new GameNotAvailableForRegistrationException(String.format("Game not available to join"));
-        }else{
-            Player joinedPlayer = new Player(playerName,playerPassword);
-            gameRepository.getById(id).get().setPlayerO(joinedPlayer);
-            gameRepository.getById(id).get().setGameStatus(GameStatus.MOVE_X);
+    public Game joinGame(long gameId, String playerName, String playerPassword) {
+        Game game = gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", gameId)));
+        if (game.getGameStatus() != GameStatus.NEW_GAME) {
+            throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", gameId));
+        } else {
+            Player joinedPlayer = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+            game.setPlayerO(joinedPlayer);
+            game.setGameStatus(GameStatus.MOVE_X);
         }
+        return game;
+    }
 
+    public Game makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
+        Game game =
+                gameRepository.getById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
+
+        Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+        if (!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
+            throw new GameNotFoundException("Wrong game.");
+        }
+        if(game.getGameStatus().equals(GameStatus.MOVE_X)){
+            game.setGameStatus(GameStatus.MOVE_O);
+        }
+        char[] grid = game.getGrid();
+        if (grid[gridPosition] != 0) {
+            throw new IllegalMoveException(String.format("Cell %d is not empty", gridPosition));
+        }
+        if (!game.getPlayerX().equals(player)) {
+            throw new IllegalMoveException("Wrong player moves!!");
+        }
+        if (game.getGameStatus() == GameStatus.X_WON || game.getGameStatus() == GameStatus.Y_WON){
+            throw new IllegalMoveException("Game is over.");
+        }
+        if (game.getGameStatus() != GameStatus.NEW_GAME) {
+            throw new IllegalMoveException("Game hasn't started yet!");
+        }
+        return game;
     }
 }
