@@ -10,8 +10,7 @@ import pl.itacademy.tictac.exception.IllegalMoveException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static pl.itacademy.tictac.domain.GameStatus.MOVE_X;
-import static pl.itacademy.tictac.domain.GameStatus.NEW_GAME;
+import static pl.itacademy.tictac.domain.GameStatus.*;
 
 class GameServiceTest {
 
@@ -118,41 +117,141 @@ class GameServiceTest {
     //TODO: Implement test cases together with GameService method implementation
     @Test
     public void makeMove_wrongPlayerTurn_throwsIllegalMoveException() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_X);
+
+        IllegalMoveException exception =
+                assertThrows(IllegalMoveException.class,() -> gameService.makeMove(game.getId(), 0, "Jan", "Kowalski"));
+        assertThat(exception).hasMessage("Wrong player turn");
 
     }
 
     @Test
     public void makeMove_gameNotStarted_throwsIllegalMoveException() {
+        Game game = new Game();
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_X);
+
+        IllegalMoveException exception =
+                assertThrows(IllegalMoveException.class, () -> gameService.makeMove(game.getId(), 0, "Jan","Kowalski"));
+        assertThat(exception).hasMessage("Game not started");
 
     }
 
     @Test
     public void makeMove_gameFinished_throwsIllegalMoveException() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(DRAW);
+
+        IllegalMoveException exception =
+                assertThrows(IllegalMoveException.class, () -> gameService.makeMove(game.getId(), 0, "Jan","Kowalski"));
+        assertThat(exception).hasMessage("Game finished");
 
     }
 
     @Test
     public void makeMove_legalMoveX_gameStatusChangesToAnotherPlayer() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_X);
+        gameService.makeMove(game.getId(), 0, "Ewa", "Nowak");
+
+        assertThat(game.getGameStatus()).isEqualTo(MOVE_O);
 
     }
 
     @Test
     public void makeMove_legalMoveO_gameStatusChangesToAnotherPlayer() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_O);
+        gameService.makeMove(game.getId(), 0, "Jan", "Kowalski");
+
+        assertThat(game.getGameStatus()).isEqualTo(MOVE_X);
 
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithDraw() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_O);
+        gameService.makeMove(game.getId(), 0, "Jan", "Kowalski");
+
+        assertThat(game.getGameStatus()).isEqualTo(DRAW);
 
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithXWon() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_X);
+        gameService.makeMove(game.getId(), 0, "Ewa", "Nowak");
+
+        assertThat(game.getGameStatus()).isEqualTo(X_WON);
+
 
     }
 
     @Test
     public void makeMove_legalMove_gameCanBeFinishedWithOWon() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerO = new Player("Jan", "Kowalski");
+        Player playerX = new Player("Ewa", "Nowak");
+        playerRepository.save(playerO);
+        playerRepository.save(playerX);
+        game.setPlayerO(playerO);
+        game.setPlayerX(playerX);
+        game.setGameStatus(MOVE_O);
+        gameService.makeMove(game.getId(), 0, "Jan", "Kowalski");
+
+        assertThat(game.getGameStatus()).isEqualTo(Y_WON);
+
 
     }
 }
