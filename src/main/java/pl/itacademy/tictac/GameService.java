@@ -74,6 +74,48 @@ public class GameService {
     //TODO: refactor the method to make it simpler
     private void verifyIfGameBeenFinished(Game game) {
         char[] grid = game.getGrid();
+        assertCellIsFree(grid, gridPosition);
+
+        grid[gridPosition] = game.getGameStatus().getSymbol();
+
+        verifyIfGameBeenFinished(game);
+
+        if (game.getGameStatus() == GameStatus.MOVE_X) {
+            game.setGameStatus(GameStatus.MOVE_O);
+        } else if (game.getGameStatus() == GameStatus.MOVE_O) {
+            game.setGameStatus(GameStatus.MOVE_X);
+        }
+
+        return game;
+    }
+
+    //TODO: refactor the method to make it simpler
+    private void verifyIfGameBeenFinished(Game game) {
+            //ROW
+//        char[][] grid = game.getGrid();
+//        for (int i = 0; i < 3; i++) {
+//            if (grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2] && grid[i][0] == 'X'){
+//                game.setGameStatus(GameStatus.X_WON);
+//            } else if (grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2] && grid[i][0] == 'O'){
+//                game.setGameStatus(GameStatus.O_WON);
+//            }
+//        }
+//          //COLUMN
+//        for (int j = 0; j < 3; j++) {
+//            if (grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j] && grid[0][j] == 'X'){
+//                game.setGameStatus(GameStatus.X_WON);
+//            } else if (grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j] && grid[0][j] == 'O'){
+//                game.setGameStatus(GameStatus.O_WON);
+//            }
+//        }
+//          //DIAGONAL
+//        if (grid[0][0 == grid[1][1] && grid[1][1] == grid[2][2] && grid[0][0] == 'X'){
+//            game.setGameStatus(GameStatus.X_WON);
+//        } else if (grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2] && grid[0][0] == 'O'){
+//            game.setGameStatus(GameStatus.O_WON);
+//        }
+
+        char[] grid = game.getGrid();
         if ((grid[0] == 'X' && grid[1] == 'X' && grid[2] == 'X') ||
                 (grid[0] == 'X' && grid[3] == 'X' && grid[6] == 'X') ||
                 (grid[6] == 'X' && grid[7] == 'X' && grid[8] == 'X') ||
