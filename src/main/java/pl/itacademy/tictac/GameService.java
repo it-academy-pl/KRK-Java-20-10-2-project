@@ -15,10 +15,11 @@ public class GameService {
     private final PlayerService playerService;
 
     public Game createGame(String playerName, String playerPassword) {
-        Game game = new Game();
-        gameRepository.save(game);
         Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+
+        Game game = new Game();
         game.setPlayerX(player);
+        gameRepository.save(game);
         return game;
     }
 
