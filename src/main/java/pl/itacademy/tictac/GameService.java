@@ -16,6 +16,7 @@ public class GameService {
 
     public Game createGame(String playerName, String playerPassword) {
         Game game = new Game();
+        gameRepository.save(game);
         Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
         game.setPlayerX(player);
         return game;
