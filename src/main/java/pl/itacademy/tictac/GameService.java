@@ -17,13 +17,12 @@ public class GameService {
     private final GameRepository gameRepository;
     private final PlayerService playerService;
 
-    //TODO: fix a bug with non-saved game
-    //FIXME: start from test
     public Game createGame(String playerName, String playerPassword) {
-        Game game = new Game();
-        gameRepository.save(game);
         Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+
+        Game game = new Game();
         game.setPlayerX(player);
+        gameRepository.save(game);
         return game;
     }
 
