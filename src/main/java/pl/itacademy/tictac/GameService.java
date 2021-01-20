@@ -13,6 +13,7 @@ import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+//TODO: add and implement methods playAgain and getStats (create StatisticResponse class for that)
 public class GameService {
     private final GameRepository gameRepository;
     private final PlayerService playerService;
