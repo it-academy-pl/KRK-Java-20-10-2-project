@@ -8,10 +8,7 @@ import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pl.itacademy.tictac.domain.GameStatus.*;
 
@@ -299,11 +296,22 @@ class GameServiceTest {
     }
 
     @Test
-    void createGame_existingPlayer_gameSavedToGameRepository(){
+    void createGame_existingPlayer_gameSavedToGameRepository() {
         Player player = new Player("Jan", "kowalski");
         playerRepository.save(player);
 
         Game game = gameService.createGame("Jan", "kowalski");
         assertEquals(Optional.of(game), gameRepository.getById(game.getId()));
+    }
+
+    //TODO: implement tests
+    @Test
+    void playAgain_createsNewGameWithSwitchedSides() {
+//        playAgain(finishedGameId)
+    }
+
+    @Test
+    void getStats_returnsStatisticForPlayer() {
+        //getStats(playerName, playerPassword)
     }
 }
