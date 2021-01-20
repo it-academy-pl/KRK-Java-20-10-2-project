@@ -9,6 +9,8 @@ import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -74,29 +76,55 @@ public class GameService {
     //TODO: refactor the method to make it simpler
     private void verifyIfGameBeenFinished(Game game) {
         char[] grid = game.getGrid();
-        if ((grid[0] == 'X' && grid[1] == 'X' && grid[2] == 'X') ||
-                (grid[0] == 'X' && grid[3] == 'X' && grid[6] == 'X') ||
-                (grid[6] == 'X' && grid[7] == 'X' && grid[8] == 'X') ||
-                (grid[2] == 'X' && grid[5] == 'X' && grid[8] == 'X') ||
-                (grid[1] == 'X' && grid[4] == 'X' && grid[7] == 'X') ||
-                (grid[3] == 'X' && grid[4] == 'X' && grid[5] == 'X') ||
-                (grid[0] == 'X' && grid[4] == 'X' && grid[8] == 'X') ||
-                (grid[2] == 'X' && grid[4] == 'X' && grid[6] == 'X')) {
+        //ROW
+        char[][] grid2d = new char[3][3];
+        grid2d[0] = Arrays.copyOfRange(grid, 0, 3);
+        grid2d[1] = Arrays.copyOfRange(grid, 3, 6);
+        grid2d[2] = Arrays.copyOfRange(grid, 6, 9);
+        for (int i = 0; i < 3; i++) {
+            if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'X') {
+                game.setGameStatus(GameStatus.X_WON);
+            } else if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'O') {
+                game.setGameStatus(GameStatus.O_WON);
+            }
+        }
+        //COLUMN
+        for (int j = 0; j < 3; j++) {
+            if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'X') {
+                game.setGameStatus(GameStatus.X_WON);
+            } else if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'O') {
+                game.setGameStatus(GameStatus.O_WON);
+            }
+        }
+        //DIAGONAL
+        if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'X') {
             game.setGameStatus(GameStatus.X_WON);
-            return;
-        }
-
-        if ((grid[0] == 'O' && grid[1] == 'O' && grid[2] == 'O') ||
-                (grid[0] == 'O' && grid[3] == 'O' && grid[6] == 'O') ||
-                (grid[6] == 'O' && grid[7] == 'O' && grid[8] == 'O') ||
-                (grid[2] == 'O' && grid[5] == 'O' && grid[8] == 'O') ||
-                (grid[1] == 'O' && grid[4] == 'O' && grid[7] == 'O') ||
-                (grid[3] == 'O' && grid[4] == 'O' && grid[5] == 'O') ||
-                (grid[0] == 'O' && grid[4] == 'O' && grid[8] == 'O') ||
-                (grid[2] == 'O' && grid[4] == 'O' && grid[6] == 'O')) {
+        } else if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'O') {
             game.setGameStatus(GameStatus.O_WON);
-            return;
         }
+//        if ((grid2d[0] == 'X' && grid2d[1] == 'X' && grid2d[2] == 'X') ||
+//                (grid2d[0] == 'X' && grid2d[3] == 'X' && grid2d[6] == 'X') ||
+//                (grid2d[6] == 'X' && grid2d[7] == 'X' && grid2d[8] == 'X') ||
+//                (grid2d[2] == 'X' && grid2d[5] == 'X' && grid2d[8] == 'X') ||
+//                (grid2d[1] == 'X' && grid2d[4] == 'X' && grid2d[7] == 'X') ||
+//                (grid2d[3] == 'X' && grid2d[4] == 'X' && grid2d[5] == 'X') ||
+//                (grid2d[0] == 'X' && grid2d[4] == 'X' && grid2d[8] == 'X') ||
+//                (grid2d[2] == 'X' && grid2d[4] == 'X' && grid2d[6] == 'X')) {
+//            game.setGameStatus(GameStatus.X_WON);
+//            return;
+//        }
+//
+//        if ((grid2d[0] == 'O' && grid2d[1] == 'O' && grid2d[2] == 'O') ||
+//                (grid2d[0] == 'O' && grid2d[3] == 'O' && grid2d[6] == 'O') ||
+//                (grid2d[6] == 'O' && grid2d[7] == 'O' && grid2d[8] == 'O') ||
+//                (grid2d[2] == 'O' && grid2d[5] == 'O' && grid2d[8] == 'O') ||
+//                (grid2d[1] == 'O' && grid2d[4] == 'O' && grid2d[7] == 'O') ||
+//                (grid2d[3] == 'O' && grid2d[4] == 'O' && grid2d[5] == 'O') ||
+//                (grid2d[0] == 'O' && grid2d[4] == 'O' && grid2d[8] == 'O') ||
+//                (grid2d[2] == 'O' && grid2d[4] == 'O' && grid2d[6] == 'O')) {
+//            game.setGameStatus(GameStatus.O_WON);
+//            return;
+//        }
 
         boolean hasEmptyCells = false;
         for (char c : grid) {
