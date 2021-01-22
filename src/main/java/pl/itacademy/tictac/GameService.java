@@ -10,6 +10,7 @@ import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -162,5 +163,23 @@ public class GameService {
         if (!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
             throw new GameNotFoundException("Wrong game.");
         }
+    }
+
+    public Game playAgain(long finishedGameId){
+        Game finishedGame = gameRepository.getById(finishedGameId)
+                .orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", finishedGameId)));
+
+        if (finishedGame.getGameStatus().isFinished()){
+            Game newGame = new Game();
+            gameRepository.save(newGame);
+            newGame.setPlayerX(finishedGame.getPlayerO());
+            newGame.setPlayerO(finishedGame.getPlayerX());
+            newGame.setGameStatus(GameStatus.MOVE_X);
+            return newGame;
+        } else {
+            throw new GameNotFoundException("Game is not finished");
+        }
+
+
     }
 }

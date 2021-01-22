@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 @ControllerAdvice
-//TODO: add handlers for all the exceptions
 public class ExceptionResolverHandler extends DefaultHandlerExceptionResolver {
 
     @ExceptionHandler(PlayerAlreadyExistsException.class)
@@ -26,6 +25,21 @@ public class ExceptionResolverHandler extends DefaultHandlerExceptionResolver {
     @ExceptionHandler(WrongPasswordException.class)
     public ResponseEntity<ErrorResponse> wrongPassword(WrongPasswordException ex) {
         return ErrorResponse.handle(ex, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(IllegalMoveException.class)
+    public ResponseEntity<ErrorResponse> illegalMove(IllegalMoveException ex) {
+        return ErrorResponse.handle(ex, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> gameNotFound(GameNotFoundException ex){
+        return ErrorResponse.handle(ex, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(GameNotAvailableForRegistrationException.class)
+    public ResponseEntity<ErrorResponse> gameNotAvailableForReg(GameNotAvailableForRegistrationException ex){
+        return ErrorResponse.handle(ex, HttpStatus.BAD_REQUEST);
     }
 
     @Getter
