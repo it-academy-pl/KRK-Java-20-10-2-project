@@ -3,12 +3,16 @@ package pl.itacademy.tictac;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.itacademy.tictac.domain.Game;
+import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pl.itacademy.tictac.domain.GameStatus.*;
 
@@ -227,7 +231,7 @@ class GameServiceTest {
         game.setPlayerO(playerO);
 
         game.setGameStatus(MOVE_O);
-        gameService.makeMove(game.getId(), 0, "Ewa", "Ewa123");
+        gameService.makeMove(game.getId(), 2, "Ewa", "Ewa123");
         assertThat(game.getGameStatus()).isEqualTo(MOVE_X);
     }
 
@@ -307,11 +311,33 @@ class GameServiceTest {
     //TODO: implement tests
     @Test
     void playAgain_createsNewGameWithSwitchedSides() {
+        Game finishedGame = new Game();
+        gameRepository.save(finishedGame);
+        finishedGame.setGameStatus(DRAW);
+            Player playerX = new Player("Jan", "Jan123");
+            playerRepository.save(playerX);
+            Game newGame = gameService.createGame("Jan", "Jan123");
+            gameRepository.save(newGame);
+            Player playerO = new Player("Ewa", "Ewa123");
+            playerRepository.save(playerO);
+            gameService.joinGame(newGame.getId(), "Ewa", "Ewa123");
+            gameService.playAgain(finishedGame.getId(), playerO, playerX);
+
+            assertThat(newGame.getPlayerX().equals(playerO));
+            assertThat(newGame.getPlayerO().equals(playerX));
 //        playAgain(finishedGameId)
     }
 
-    @Test
+   /* @Test
     void getStats_returnsStatisticForPlayer() {
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerX = new Player("Jan", "Jan123");
+        playerRepository.save(playerX);
+        game.setGameStatus(X_WON);
+        gameService.stats(game);
+
         //getStats(playerName, playerPassword)
     }
+    */
 }

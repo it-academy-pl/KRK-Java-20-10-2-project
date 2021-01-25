@@ -9,7 +9,7 @@ import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
-import java.util.Arrays;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +74,6 @@ public class GameService {
         return game;
     }
 
-    //TODO: refactor the method to make it simpler
     private void verifyIfGameBeenFinished(Game game) {
         char[] grid = game.getGrid();
         //ROW
@@ -103,29 +102,6 @@ public class GameService {
         } else if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'O') {
             game.setGameStatus(GameStatus.O_WON);
         }
-//        if ((grid2d[0] == 'X' && grid2d[1] == 'X' && grid2d[2] == 'X') ||
-//                (grid2d[0] == 'X' && grid2d[3] == 'X' && grid2d[6] == 'X') ||
-//                (grid2d[6] == 'X' && grid2d[7] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[2] == 'X' && grid2d[5] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[1] == 'X' && grid2d[4] == 'X' && grid2d[7] == 'X') ||
-//                (grid2d[3] == 'X' && grid2d[4] == 'X' && grid2d[5] == 'X') ||
-//                (grid2d[0] == 'X' && grid2d[4] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[2] == 'X' && grid2d[4] == 'X' && grid2d[6] == 'X')) {
-//            game.setGameStatus(GameStatus.X_WON);
-//            return;
-//        }
-//
-//        if ((grid2d[0] == 'O' && grid2d[1] == 'O' && grid2d[2] == 'O') ||
-//                (grid2d[0] == 'O' && grid2d[3] == 'O' && grid2d[6] == 'O') ||
-//                (grid2d[6] == 'O' && grid2d[7] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[2] == 'O' && grid2d[5] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[1] == 'O' && grid2d[4] == 'O' && grid2d[7] == 'O') ||
-//                (grid2d[3] == 'O' && grid2d[4] == 'O' && grid2d[5] == 'O') ||
-//                (grid2d[0] == 'O' && grid2d[4] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[2] == 'O' && grid2d[4] == 'O' && grid2d[6] == 'O')) {
-//            game.setGameStatus(GameStatus.O_WON);
-//            return;
-//        }
 
         boolean hasEmptyCells = false;
         for (char c : grid) {
@@ -163,5 +139,32 @@ public class GameService {
             throw new GameNotFoundException("Wrong game.");
         }
     }
-}
+
+    //TODO: add and implement methods playAgain and getStats (create StatisticResponse class for that)
+    public Game playAgain(long finishedGameID, Player playerO, Player playerX) {
+        Game game = gameRepository.getById(finishedGameID)
+                .orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", finishedGameID)));
+        game.setPlayerX(playerO);
+        game.setPlayerO(playerX);
+
+        return game;
+    }
+
+    /*Map<String, GameStatus> stats = new HashMap();
+    List<String> apfa = new ArrayList<>();
+
+    protected void stats(Game game) {
+        if (game.getGameStatus().equals(GameStatus.X_WON)) {
+            stats.put(game.getPlayerX().getName(), GameStatus.X_WON);
+        } else if (game.getGameStatus().equals(GameStatus.O_WON)) {
+            stats.put(game.getPlayerO().getName(), GameStatus.O_WON);
+        }
+    }
+    public int getStats(String playerName){
+            stats.get(playerName);
+
+
+        }
+     */
+    }
 
