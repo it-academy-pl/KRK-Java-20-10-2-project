@@ -37,7 +37,7 @@ public class Game {
         return grid;
     }
 
-    public boolean isFinish() {
+    public boolean isFinished() {
         return finish;
     }
 
@@ -87,26 +87,8 @@ public class Game {
             throw new GameNotStartedException();
         }
 
-        boolean freeSpaceFlag = false;
-        for(int[] ints : grid) {
-            if(freeSpaceFlag) {
-                break;
-            }
-            for(int anInt : ints) {
-                if(anInt == 0) {
-                    freeSpaceFlag = true;
-                    break;
-                }
-            }
-        }
-        if(!freeSpaceFlag) {
-            finish = true;
-            gameStarted = false;
-            endDrawGame();
-            return true;
-        }
+        Game.Symbol playerSymbol = inGameLobby.get(user);
 
-        Symbol playerSymbol = inGameLobby.get(user);
         if(gameStarted && currentSymbolPlayed != playerSymbol && grid[coordinates.getY()][coordinates.getX()] == 0) {
             grid[coordinates.getY()][coordinates.getX()] = getPlayersSymbol(playerSymbol);
             currentSymbolPlayed = playerSymbol;
@@ -118,27 +100,10 @@ public class Game {
             }
 
             if(winCheck()) {
-                finish = true;
-                gameStarted = false;
                 endSettledGame(user);
             }
 
-            //TODO: remove repeating code
-            freeSpaceFlag = false;
-            for(int[] ints : grid) {
-                if(freeSpaceFlag) {
-                    break;
-                }
-                for(int anInt : ints) {
-                    if(anInt == 0) {
-                        freeSpaceFlag = true;
-                        break;
-                    }
-                }
-            }
-            if(!freeSpaceFlag) {
-                finish = true;
-                gameStarted = false;
+            if(isGridFull()) {
                 endDrawGame();
                 return true;
             }
@@ -147,7 +112,21 @@ public class Game {
         return false;
     }
 
+    private boolean isGridFull() {
+        for(int[] ints : grid) {
+            for(int anInt : ints) {
+                if(anInt == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void endSettledGame(User user) {
+        finish = true;
+        gameStarted = false;
+
         user.saveGameResult(1);
         for(Map.Entry<User, Symbol> userEntry : inGameLobby.entrySet()) {
             if(!userEntry.getKey().equals(user)) {
@@ -157,6 +136,9 @@ public class Game {
     }
 
     private void endDrawGame() {
+        finish = true;
+        gameStarted = false;
+
         for(Map.Entry<User, Symbol> userEntry : inGameLobby.entrySet()) {
             userEntry.getKey().saveGameResult(0);
         }
@@ -165,7 +147,7 @@ public class Game {
     }
 
     private char getPlayersSymbol(Symbol symbol) {
-        if(symbol == Symbol.X) {
+        if(symbol.equals(Symbol.X)) {
             return 'x';
         }
         return 'o';

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository("userDao")
 public class UserDataAccessService implements UserDao {
 
-    private static final List<User> registeredUsersDB = new ArrayList<>();
+    private final List<User> registeredUsersDB = new ArrayList<>();
 
     @Override
     public boolean registerNewUser(User user) {

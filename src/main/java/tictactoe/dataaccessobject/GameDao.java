@@ -31,4 +31,8 @@ public interface GameDao {
     void printLobbyGrid(UUID lobbyID);
 
     boolean lobbyGameFinished(UUID lobbyID);
+
+    //TODO:
+//    - add switch symbols
+//    - something conected to play again which will call method above
 }

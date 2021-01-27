@@ -66,12 +66,12 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User player = (User) o;
-        return Objects.equals(name, player.name) && Objects.equals(password, player.password) && Objects.equals(playerScore, player.playerScore);
+        User user = (User) o;
+        return Objects.equals(name, user.name) && Objects.equals(password, user.password) && Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, password, playerScore);
+        return Objects.hash(name, password, id);
     }
 }

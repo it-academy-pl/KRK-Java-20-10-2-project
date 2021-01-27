@@ -13,8 +13,10 @@ import java.util.UUID;
 
 @Repository("gameDao")
 public class GameDataAccessService implements GameDao {
-    private static final List<User> loggedInUsersDB = new ArrayList<>();
-    private static final List<Lobby> createdLobbiesDB = new ArrayList<>();
+
+    //TODO: refactor to map
+    private final List<User> loggedInUsersDB = new ArrayList<>();
+    private final List<Lobby> createdLobbiesDB = new ArrayList<>();
 
     private final UserDao userDao;
 
@@ -43,6 +45,7 @@ public class GameDataAccessService implements GameDao {
         throw new UserNotRegisteredException();
     }
 
+    //TODO: make external methods
     @Override
     public boolean logOutUser(String userName) {
         for(User user : userDao.getRegisteredUsers()) {
@@ -191,7 +194,7 @@ public class GameDataAccessService implements GameDao {
         }
 
         boolean moveCompleted = user.getActiveLobby().getGame().makeMove(user, coordinates);
-        if(user.getActiveLobby().getGame().isFinish()) {
+        if(user.getActiveLobby().getGame().isFinished()) {
             System.out.println("Game Over!");
         }
         return moveCompleted;
@@ -213,7 +216,7 @@ public class GameDataAccessService implements GameDao {
 
     @Override
     public boolean lobbyGameFinished(UUID lobbyID) {
-        return getLobbyFromID(lobbyID).getGame().isFinish();
+        return getLobbyFromID(lobbyID).getGame().isFinished();
     }
 
 
