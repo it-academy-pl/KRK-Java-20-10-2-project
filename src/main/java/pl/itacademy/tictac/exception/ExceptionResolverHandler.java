@@ -28,6 +28,22 @@ public class ExceptionResolverHandler extends DefaultHandlerExceptionResolver {
         return ErrorResponse.handle(ex, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(IllegalMoveException.class)
+    public ResponseEntity<ErrorResponse> illegalMove(IllegalMoveException ex) {
+        return ErrorResponse.handle(ex,HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> gameNotFound(GameNotFoundException ex) {
+        return ErrorResponse.handle(ex,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(GameNotAvailableForRegistrationException.class)
+    public ResponseEntity<ErrorResponse> gameNotAvailableForRegistration(GameNotAvailableForRegistrationException ex) {
+        return ErrorResponse.handle(ex,HttpStatus.BAD_GATEWAY);
+    }
+
+
     @Getter
     @Setter
     @AllArgsConstructor
