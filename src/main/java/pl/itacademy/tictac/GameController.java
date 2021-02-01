@@ -43,8 +43,15 @@ public class GameController {
     }
 
     @PostMapping("/playAgain")
-    public ResponseEntity<GameResponse> playAgain(@RequestParam("finishedGameId") long finishedGameId){
+    public ResponseEntity<GameResponse> playAgain(@RequestParam("finishedGameId") long finishedGameId) {
         return ResponseEntity.ok(GameResponse.fromGame(gameService.playAgain(finishedGameId)));
+    }
+
+    @PostMapping("/statistic")
+    public ResponseEntity<GameStatistic> getStatistic(@RequestParam("playerName") String playerName,
+                                                      @RequestParam("playerPassword") String playerPassword) {
+        GameStatistic statistic = gameService.statisticFor(playerName, playerPassword);
+        return ResponseEntity.ok(statistic);
     }
 
     @Getter

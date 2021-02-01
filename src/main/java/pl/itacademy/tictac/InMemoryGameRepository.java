@@ -3,6 +3,7 @@ package pl.itacademy.tictac;
 import org.springframework.stereotype.Component;
 import pl.itacademy.tictac.domain.Game;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,5 +20,10 @@ public class InMemoryGameRepository implements GameRepository {
     @Override
     public Optional<Game> getById(long id) {
         return Optional.ofNullable(games.get(id));
+    }
+
+    @Override
+    public Collection<Game> getAll() {
+        return games.values();
     }
 }

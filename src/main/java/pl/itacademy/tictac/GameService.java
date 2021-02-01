@@ -10,7 +10,10 @@ import pl.itacademy.tictac.exception.GameNotFoundException;
 import pl.itacademy.tictac.exception.IllegalMoveException;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static pl.itacademy.tictac.domain.GameStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -85,48 +88,25 @@ public class GameService {
         grid2d[2] = Arrays.copyOfRange(grid, 6, 9);
         for (int i = 0; i < 3; i++) {
             if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'X') {
-                game.setGameStatus(GameStatus.X_WON);
+                game.setGameStatus(X_WON);
             } else if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'O') {
-                game.setGameStatus(GameStatus.O_WON);
+                game.setGameStatus(O_WON);
             }
         }
         //COLUMN
         for (int j = 0; j < 3; j++) {
             if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'X') {
-                game.setGameStatus(GameStatus.X_WON);
+                game.setGameStatus(X_WON);
             } else if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'O') {
-                game.setGameStatus(GameStatus.O_WON);
+                game.setGameStatus(O_WON);
             }
         }
         //DIAGONAL
         if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'X') {
-            game.setGameStatus(GameStatus.X_WON);
+            game.setGameStatus(X_WON);
         } else if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'O') {
-            game.setGameStatus(GameStatus.O_WON);
+            game.setGameStatus(O_WON);
         }
-//        if ((grid2d[0] == 'X' && grid2d[1] == 'X' && grid2d[2] == 'X') ||
-//                (grid2d[0] == 'X' && grid2d[3] == 'X' && grid2d[6] == 'X') ||
-//                (grid2d[6] == 'X' && grid2d[7] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[2] == 'X' && grid2d[5] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[1] == 'X' && grid2d[4] == 'X' && grid2d[7] == 'X') ||
-//                (grid2d[3] == 'X' && grid2d[4] == 'X' && grid2d[5] == 'X') ||
-//                (grid2d[0] == 'X' && grid2d[4] == 'X' && grid2d[8] == 'X') ||
-//                (grid2d[2] == 'X' && grid2d[4] == 'X' && grid2d[6] == 'X')) {
-//            game.setGameStatus(GameStatus.X_WON);
-//            return;
-//        }
-//
-//        if ((grid2d[0] == 'O' && grid2d[1] == 'O' && grid2d[2] == 'O') ||
-//                (grid2d[0] == 'O' && grid2d[3] == 'O' && grid2d[6] == 'O') ||
-//                (grid2d[6] == 'O' && grid2d[7] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[2] == 'O' && grid2d[5] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[1] == 'O' && grid2d[4] == 'O' && grid2d[7] == 'O') ||
-//                (grid2d[3] == 'O' && grid2d[4] == 'O' && grid2d[5] == 'O') ||
-//                (grid2d[0] == 'O' && grid2d[4] == 'O' && grid2d[8] == 'O') ||
-//                (grid2d[2] == 'O' && grid2d[4] == 'O' && grid2d[6] == 'O')) {
-//            game.setGameStatus(GameStatus.O_WON);
-//            return;
-//        }
 
         boolean hasEmptyCells = false;
         for (char c : grid) {
@@ -165,11 +145,11 @@ public class GameService {
         }
     }
 
-    public Game playAgain(long finishedGameId){
+    public Game playAgain(long finishedGameId) {
         Game finishedGame = gameRepository.getById(finishedGameId)
                 .orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", finishedGameId)));
 
-        if (finishedGame.getGameStatus().isFinished()){
+        if (finishedGame.getGameStatus().isFinished()) {
             Game newGame = new Game();
             gameRepository.save(newGame);
             newGame.setPlayerX(finishedGame.getPlayerO());
@@ -181,5 +161,33 @@ public class GameService {
         }
 
 
+    }
+
+    public GameStatistic statisticFor(String playerName, String playerPassword) {
+        Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+        List<Game> games = gameRepository.getAll()
+                .stream()
+                .filter(game -> player.equals(game.getPlayerO()) || player.equals(game.getPlayerX()))
+                .collect(Collectors.toList());
+
+        return statisticForPlayer(player, games);
+    }
+
+    private GameStatistic statisticForPlayer(Player player, List<Game> games) {
+        GameStatistic statistic = new GameStatistic();
+        for (Game game : games) {
+            if (game.getGameStatus() == DRAW) {
+                statistic.incrementDraw();
+            } else if (game.getPlayerO().equals(player) && game.getGameStatus() == O_WON) {
+                statistic.incrementWon();
+            } else if (game.getPlayerX().equals(player) && game.getGameStatus() == X_WON) {
+                statistic.incrementWon();
+            } else if (game.getPlayerO().equals(player) && game.getGameStatus() == X_WON) {
+                statistic.incrementLost();
+            } else if (game.getPlayerX().equals(player) && game.getGameStatus() == O_WON) {
+                statistic.incrementLost();
+            }
+        }
+        return statistic;
     }
 }
