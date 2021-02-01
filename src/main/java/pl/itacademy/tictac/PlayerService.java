@@ -36,9 +36,4 @@ public class PlayerService {
             throw new WrongPasswordException("Wrong password!");
         }
     }
-
-    public Player getByName(String name){
-       Player player = playerRepository.getByName(name);
-       return player;
-    }
 }

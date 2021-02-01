@@ -7,6 +7,9 @@ import pl.itacademy.tictac.domain.GameStatus;
 import pl.itacademy.tictac.domain.Player;
 import pl.itacademy.tictac.exception.GameNotAvailableForRegistrationException;
 import pl.itacademy.tictac.exception.GameNotFoundException;
+import pl.itacademy.tictac.exception.IllegalMoveException;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,17 +27,145 @@ public class GameService {
         return game;
     }
 
-    public void joinGame(long id, String playerName, String playerPassword) {
-
-
-        if(id != gameRepository.getById(id).get().getId()) {
-            throw new GameNotFoundException(String.format("Game %d not found", id));
-        } else if(gameRepository.getById(id).get().getGameStatus() != GameStatus.NEW_GAME) {
-            throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", id));
+    public Game joinGame(long gameId, String playerName, String playerPassword) {
+        Game game = gameRepository.getById(gameId)
+                .orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", gameId)));
+        if (game.getGameStatus() != GameStatus.NEW_GAME) {
+            throw new GameNotAvailableForRegistrationException(String.format("The game %d has already started!", gameId));
         } else {
-            Player joinedPlayer = new Player(playerName, playerPassword);
-            gameRepository.getById(id).get().setPlayerO(joinedPlayer);
-            gameRepository.getById(id).get().setGameStatus(GameStatus.MOVE_X);
+            Player joinedPlayer =
+                    playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+            game.setPlayerO(joinedPlayer);
+            game.setGameStatus(GameStatus.MOVE_X);
+        }
+        return game;
+    }
+
+    public Game makeMove(long gameId, int gridPosition, String playerName, String playerPassword) {
+        Game game = gameRepository.getById(gameId)
+                .orElseThrow(() -> new GameNotFoundException("Game not found"));
+
+        assertGameStarted(game);
+        assertGameNotFinished(game);
+
+        Player player = playerService.getPlayerByNameAndPassword(playerName, playerPassword);
+        assertPlayerRegisteredToGame(game, player);
+
+        //TODO: try to get rid of code duplication
+        if ((game.getGameStatus() == GameStatus.MOVE_O) && (player.equals(game.getPlayerX()))) {
+            throw new IllegalMoveException("That's not your turn!");
+        } else if ((game.getGameStatus() == GameStatus.MOVE_X) && (player.equals(game.getPlayerO()))) {
+            throw new IllegalMoveException("That's not your turn!");
+        }
+
+        char[] grid = game.getGrid();
+        assertCellIsFree(grid, gridPosition);
+
+        grid[gridPosition] = game.getGameStatus().getSymbol();
+
+        verifyIfGameBeenFinished(game);
+
+        if (game.getGameStatus() == GameStatus.MOVE_X) {
+            game.setGameStatus(GameStatus.MOVE_O);
+        } else if (game.getGameStatus() == GameStatus.MOVE_O) {
+            game.setGameStatus(GameStatus.MOVE_X);
+        }
+
+        return game;
+    }
+
+    private void verifyIfGameBeenFinished(Game game) {
+        char[] grid = game.getGrid();
+        //ROW
+        char[][] grid2d = new char[3][3];
+        grid2d[0] = Arrays.copyOfRange(grid, 0, 3);
+        grid2d[1] = Arrays.copyOfRange(grid, 3, 6);
+        grid2d[2] = Arrays.copyOfRange(grid, 6, 9);
+        for (int i = 0; i < 3; i++) {
+            if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'X') {
+                game.setGameStatus(GameStatus.X_WON);
+            } else if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'O') {
+                game.setGameStatus(GameStatus.O_WON);
+            }
+        }
+        //COLUMN
+        for (int j = 0; j < 3; j++) {
+            if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'X') {
+                game.setGameStatus(GameStatus.X_WON);
+            } else if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'O') {
+                game.setGameStatus(GameStatus.O_WON);
+            }
+        }
+        //DIAGONAL
+        if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'X') {
+            game.setGameStatus(GameStatus.X_WON);
+        } else if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'O') {
+            game.setGameStatus(GameStatus.O_WON);
+        }
+
+        boolean hasEmptyCells = false;
+        for (char c : grid) {
+            if (c == 0) {
+                hasEmptyCells = true;
+                break;
+            }
+        }
+
+        if (!hasEmptyCells) {
+            game.setGameStatus(GameStatus.DRAW);
         }
     }
-}
+
+    private void assertCellIsFree(char[] grid, int gridPosition) {
+        if (grid[gridPosition] != 0) {
+            throw new IllegalMoveException(String.format("Cell %d is not empty", gridPosition));
+        }
+    }
+
+    private void assertGameNotFinished(Game game) {
+        if (game.getGameStatus().isFinished()) {
+            throw new IllegalMoveException("Game has been finished! Start new one.");
+        }
+    }
+
+    private void assertGameStarted(Game game) {
+        if (game.getGameStatus() == GameStatus.NEW_GAME) {
+            throw new IllegalMoveException("Game is not started yet!");
+        }
+    }
+
+    private void assertPlayerRegisteredToGame(Game game, Player player) {
+        if (!game.getPlayerX().equals(player) && !game.getPlayerO().equals(player)) {
+            throw new GameNotFoundException("Wrong game.");
+        }
+    }
+
+    //TODO: add and implement methods playAgain and getStats (create StatisticResponse class for that)
+    public Game playAgain(long finishedGameID, Player playerO, Player playerX) {
+        Game game = gameRepository.getById(finishedGameID)
+                .orElseThrow(() -> new GameNotFoundException(String.format("Game %d not found", finishedGameID)));
+        game.setPlayerX(playerO);
+        game.setPlayerO(playerX);
+
+        return game;
+    }
+
+
+    /*Map<String, GameStatus> stats = new HashMap();
+    List<String> apfa = new ArrayList<>();
+
+    protected void stats(Game game) {
+        if (game.getGameStatus().equals(GameStatus.X_WON)) {
+            stats.put(game.getPlayerX().getName(), GameStatus.X_WON);
+        } else if (game.getGameStatus().equals(GameStatus.O_WON)) {
+            stats.put(game.getPlayerO().getName(), GameStatus.O_WON);
+        }
+    }
+    public int getStats(String playerName){
+            stats.get(playerName);
+
+
+        }
+     */
+    }
+
