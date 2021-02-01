@@ -310,6 +310,7 @@ class GameServiceTest {
 
     //TODO: implement tests
     @Test
+
     void playAgain_createsNewGameWithSwitchedSides() {
         Game finishedGame = new Game();
         gameRepository.save(finishedGame);
