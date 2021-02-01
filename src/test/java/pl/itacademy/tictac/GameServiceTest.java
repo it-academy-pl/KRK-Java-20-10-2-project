@@ -325,19 +325,6 @@ class GameServiceTest {
 
             assertThat(newGame.getPlayerX().equals(playerO));
             assertThat(newGame.getPlayerO().equals(playerX));
-//        playAgain(finishedGameId)
     }
 
-   /* @Test
-    void getStats_returnsStatisticForPlayer() {
-        Game game = new Game();
-        gameRepository.save(game);
-        Player playerX = new Player("Jan", "Jan123");
-        playerRepository.save(playerX);
-        game.setGameStatus(X_WON);
-        gameService.stats(game);
-
-        //getStats(playerName, playerPassword)
-    }
-    */
 }

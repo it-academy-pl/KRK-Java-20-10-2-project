@@ -150,22 +150,5 @@ public class GameService {
         return game;
     }
 
-
-    /*Map<String, GameStatus> stats = new HashMap();
-    List<String> apfa = new ArrayList<>();
-
-    protected void stats(Game game) {
-        if (game.getGameStatus().equals(GameStatus.X_WON)) {
-            stats.put(game.getPlayerX().getName(), GameStatus.X_WON);
-        } else if (game.getGameStatus().equals(GameStatus.O_WON)) {
-            stats.put(game.getPlayerO().getName(), GameStatus.O_WON);
-        }
-    }
-    public int getStats(String playerName){
-            stats.get(playerName);
-
-
-        }
-     */
     }
 
