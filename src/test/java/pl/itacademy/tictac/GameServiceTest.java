@@ -13,6 +13,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static pl.itacademy.tictac.domain.GameStatus.*;
 
 class GameServiceTest {
@@ -304,13 +305,43 @@ class GameServiceTest {
         playerRepository.save(player);
 
         Game game = gameService.createGame("Jan", "kowalski");
-        assertEquals(Optional.of(game), gameRepository.getById(game.getId()));
+        assertThat(Optional.of(game)).contains(game);
     }
 
     //TODO: implement tests
     @Test
     void playAgain_createsNewGameWithSwitchedSides() {
-//        playAgain(finishedGameId)
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerX = new Player("Jan", "Jan123");
+        Player playerO = new Player("Ewa", "Ewa123");
+        playerRepository.save(playerX);
+        playerRepository.save(playerO);
+        game.setPlayerX(playerX);
+        game.setPlayerO(playerO);
+        game.setGameStatus(X_WON);
+
+        Game newGame = gameService.playAgain(game.getId());
+        assertThat(newGame.getGameStatus()).isEqualTo(MOVE_X);
+        assertThat(game.getPlayerX()).isEqualTo(newGame.getPlayerO());
+        assertThat(game.getPlayerO()).isEqualTo(newGame.getPlayerX());
+    }
+
+    @Test
+    void playAgain_gameIsNotFinished_throwsGameNotFoundException(){
+        Game game = new Game();
+        gameRepository.save(game);
+        Player playerX = new Player("Jan", "Jan123");
+        Player playerO = new Player("Ewa", "Ewa123");
+        playerRepository.save(playerX);
+        playerRepository.save(playerO);
+        game.setPlayerX(playerX);
+        game.setPlayerO(playerO);
+        game.setGameStatus(MOVE_X);
+
+        GameNotFoundException gameNotFoundException =
+                assertThrows(GameNotFoundException.class, () -> gameService.playAgain(game.getId()));
+                assertThat(gameNotFoundException).hasMessage("Game is not finished");
     }
 
     @Test

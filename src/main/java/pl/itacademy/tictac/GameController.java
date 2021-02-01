@@ -42,6 +42,11 @@ public class GameController {
         return ResponseEntity.ok(GameResponse.fromGame(gameService.makeMove(gameId, gridPosition, playerName, playerPassword)));
     }
 
+    @PostMapping("/playAgain")
+    public ResponseEntity<GameResponse> playAgain(@RequestParam("finishedGameId") long finishedGameId){
+        return ResponseEntity.ok(GameResponse.fromGame(gameService.playAgain(finishedGameId)));
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
