@@ -80,32 +80,37 @@ public class GameService {
 
     //TODO: refactor the method to make it simpler
     private void verifyIfGameBeenFinished(Game game) {
+        GameStatus winner;
+        if (game.getGameStatus() == MOVE_X) {
+            winner = X_WON;
+        } else {
+            winner = O_WON;
+        }
+
         char[] grid = game.getGrid();
-        //ROW
         char[][] grid2d = new char[3][3];
         grid2d[0] = Arrays.copyOfRange(grid, 0, 3);
         grid2d[1] = Arrays.copyOfRange(grid, 3, 6);
         grid2d[2] = Arrays.copyOfRange(grid, 6, 9);
+        //ROW
         for (int i = 0; i < 3; i++) {
-            if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'X') {
-                game.setGameStatus(X_WON);
-            } else if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] == 'O') {
-                game.setGameStatus(O_WON);
+            if (grid2d[i][0] == grid2d[i][1] && grid2d[i][1] == grid2d[i][2] && grid2d[i][0] != 0) {
+                game.setGameStatus(winner);
             }
         }
         //COLUMN
         for (int j = 0; j < 3; j++) {
-            if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'X') {
-                game.setGameStatus(X_WON);
-            } else if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] == 'O') {
-                game.setGameStatus(O_WON);
+            if (grid2d[0][j] == grid2d[1][j] && grid2d[1][j] == grid2d[2][j] && grid2d[0][j] != 0) {
+                game.setGameStatus(winner);
             }
         }
         //DIAGONAL
-        if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'X') {
-            game.setGameStatus(X_WON);
-        } else if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] == 'O') {
-            game.setGameStatus(O_WON);
+        if (grid2d[0][0] == grid2d[1][1] && grid2d[1][1] == grid2d[2][2] && grid2d[0][0] != 0) {
+            game.setGameStatus(winner);
+        }
+        //DIAGONAL
+        if (grid2d[0][2] == grid2d[1][1] && grid2d[1][1] == grid2d[2][0] && grid2d[0][2] != 0) {
+            game.setGameStatus(winner);
         }
 
         boolean hasEmptyCells = false;
@@ -116,7 +121,7 @@ public class GameService {
             }
         }
 
-        if (!hasEmptyCells) {
+        if (!hasEmptyCells && !game.getGameStatus().isFinished()) {
             game.setGameStatus(GameStatus.DRAW);
         }
     }

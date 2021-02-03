@@ -37,15 +37,9 @@ public class ExceptionResolverHandler extends DefaultHandlerExceptionResolver {
         return ErrorResponse.handle(ex, HttpStatus.NOT_ACCEPTABLE);
     }
 
-
     @ExceptionHandler(IllegalMoveException.class)
     public ResponseEntity<ErrorResponse> illegalMove(IllegalMoveException ex) {
         return ErrorResponse.handle(ex, HttpStatus.METHOD_NOT_ALLOWED);
-    }
-
-    @ExceptionHandler(GameNotAvailableForRegistrationException.class)
-    public ResponseEntity<ErrorResponse> gameNotAvailableForReg(GameNotAvailableForRegistrationException ex){
-        return ErrorResponse.handle(ex, HttpStatus.BAD_REQUEST);
     }
 
     @Getter
